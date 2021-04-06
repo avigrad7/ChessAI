@@ -44,12 +44,12 @@ void Pawn::moveUp(std::vector<sf::Vector2f>& whitePositions, std::vector<sf::Vec
 		thisY = (int)blackPositions[indexInArray].y;
 		colorForAdding = 1;
 	}
-	for (int i = 0; i < (int)whitePositions.size(); i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (whitePositions[i].x == thisX && whitePositions[i].y == thisY + colorForAdding || blackPositions[i].x == thisX && blackPositions[i].y == thisY + colorForAdding)
 		{
 			checked = true;
-			i = (int)whitePositions.size();
+			i = 16;
 		}
 	}
 	if (m_Color == WHITE)
@@ -57,13 +57,13 @@ void Pawn::moveUp(std::vector<sf::Vector2f>& whitePositions, std::vector<sf::Vec
 		if (!checked && thisY == 7)
 		{
 			colorForAdding = -2;
-			for (int i = 0; i < (int)whitePositions.size(); i++)
+			for (int i = 0; i < 16; i++)
 			{
 				if (whitePositions[i].x == thisX && whitePositions[i].y == thisY + colorForAdding || blackPositions[i].x == thisX && blackPositions[i].y == thisY + colorForAdding)
 				{
 					checked = true;
 					allMoves.push_back(sf::Vector2f((float)thisX, (float)thisY - 1));
-					i = (int)whitePositions.size();
+					i = 16;
 				}
 			}
 			if (!checked)
@@ -78,13 +78,13 @@ void Pawn::moveUp(std::vector<sf::Vector2f>& whitePositions, std::vector<sf::Vec
 		if (!checked && thisY == 2)
 		{
 			colorForAdding = 2;
-			for (int i = 0; i < (int)whitePositions.size(); i++)
+			for (int i = 0; i < 16; i++)
 			{
 				if (whitePositions[i].x == thisX && whitePositions[i].y == thisY + colorForAdding || blackPositions[i].x == thisX && blackPositions[i].y == thisY + colorForAdding)
 				{
 					checked = true;
 					allMoves.push_back(sf::Vector2f((float)thisX, (float)thisY + 1));
-					i = (int)whitePositions.size();
+					i = 16;
 				}
 			}
 			if (!checked)
@@ -117,7 +117,7 @@ void Pawn::takePiece(std::vector<sf::Vector2f>& whitePositions, std::vector<sf::
 		thisY = (int)blackPositions[indexInArray].y;
 		colorForAdding = 1;
 	}
-	for (int i = 0; i < (int)whitePositions.size(); i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (m_Color == WHITE)
 		{

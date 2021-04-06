@@ -84,6 +84,8 @@ void Queen::moveUpLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vect
 				}
 				checkPositionX = 0;
 				checkPositionY = 0;
+				i = 16;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -108,6 +110,7 @@ void Queen::moveUpLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vect
 				}
 				checkPositionX = 0;
 				checkPositionY = 0;
+				i = 16;
 			}
 		}
 	}
@@ -175,6 +178,7 @@ void Queen::moveUpRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vec
 				}
 				checkPositionX = 9;
 				checkPositionY = 0;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -199,6 +203,7 @@ void Queen::moveUpRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vec
 				}
 				checkPositionX = 9;
 				checkPositionY = 0;
+				i = 16;
 			}
 		}
 	}
@@ -266,6 +271,7 @@ void Queen::moveDownLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Ve
 				}
 				checkPositionX = 0;
 				checkPositionY = 9;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -290,6 +296,7 @@ void Queen::moveDownLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Ve
 				}
 				checkPositionX = 0;
 				checkPositionY = 9;
+				i = 16;
 			}
 		}
 	}
@@ -357,6 +364,7 @@ void Queen::moveDownRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::V
 				}
 				checkPositionX = 9;
 				checkPositionY = 9;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -381,6 +389,7 @@ void Queen::moveDownRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::V
 				}
 				checkPositionX = 9;
 				checkPositionY = 9;
+				i = 16;
 			}
 		}
 	}

@@ -79,6 +79,7 @@ void Bishop::moveUpLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vec
 				}
 				checkPositionX = 0;
 				checkPositionY = 0;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -103,6 +104,7 @@ void Bishop::moveUpLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Vec
 				}
 				checkPositionX = 0;
 				checkPositionY = 0;
+				i = 16;
 			}
 		}
 	}
@@ -170,6 +172,7 @@ void Bishop::moveUpRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Ve
 				}
 				checkPositionX = 9;
 				checkPositionY = 0;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -194,6 +197,7 @@ void Bishop::moveUpRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::Ve
 				}
 				checkPositionX = 9;
 				checkPositionY = 0;
+				i = 16;
 			}
 		}
 	}
@@ -261,6 +265,7 @@ void Bishop::moveDownLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::V
 				}
 				checkPositionX = 0;
 				checkPositionY = 9;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -285,6 +290,7 @@ void Bishop::moveDownLeft(std::vector<sf::Vector2f>& allMoves, std::vector<sf::V
 				}
 				checkPositionX = 0;
 				checkPositionY = 9;
+				i = 16;
 			}
 		}
 	}
@@ -352,6 +358,7 @@ void Bishop::moveDownRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::
 				}
 				checkPositionX = 9;
 				checkPositionY = 9;
+				i = 16;
 			}
 			else if (blackPositions[i].x == checkPositionX && blackPositions[i].y == checkPositionY)
 			{
@@ -376,6 +383,7 @@ void Bishop::moveDownRight(std::vector<sf::Vector2f>& allMoves, std::vector<sf::
 				}
 				checkPositionX = 9;
 				checkPositionY = 9;
+				i = 16;
 			}
 		}
 	}
