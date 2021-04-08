@@ -13,14 +13,15 @@ public:
 	~Game();
 public:
 	/*
-	* Moves a piece to a new place on the board
+	* Moves a piece to a new place on the board and sets it's position
 	*
-	* @param piece: The piece you want to move
+	* @param color: the color of piece you are moving
+	* @param index: the index where the piece is in positions array
 	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
 	*
 	* @return None
 	*/
-	void movePiece(sf::RectangleShape& piece, const sf::Vector2f& moveTo);
+	void movePieceAndSetPosition(Color color, int index, const sf::Vector2f& moveTo);
 	/*
 	* Gets the window
 	*
@@ -41,7 +42,31 @@ public:
 	* @return An array of all possible moves
 	*/
 	std::vector<sf::Vector2f> genAllMoves(const Color& color);
+	/*
+	* Gets the white positions
+	* 
+	* @retun The vector for the white positions
+	*/
+	std::vector<sf::Vector2f> getWhitePositions() { return m_WhitePositions; }
+	/*
+	* Gets the black positions
+	*
+	* @retun The vector for the black positions
+	*/
+	std::vector<sf::Vector2f> getBlackPositions() { return m_BlackPositions; }
+
+	bool isGameEnd();
+	void setAI() { isAI = true; }
 private:
+	/*
+	* Moves a piece to a new place on the board
+	*
+	* @param piece: The piece you want to move
+	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
+	*
+	* @return None
+	*/
+	void movePiece(sf::RectangleShape& piece, const sf::Vector2f& moveTo);
 	/*
 	* Used in the constroctor to set up all the pieces
 	*
@@ -197,7 +222,6 @@ private:
 	void gameEnd();
 private:
 	sf::RenderWindow* m_Window = new sf::RenderWindow;
-
 	std::vector<Rook> whiteRooks;
 	std::vector<Rook> blackRooks;
 
@@ -215,7 +239,6 @@ private:
 
 	King* whiteKing;
 	King* blackKing;
-
 	sf::Event event;
 
 	std::vector<sf::Vector2f> m_WhitePositions;
@@ -225,5 +248,7 @@ private:
 
 	bool isWhiteTurn = true;
 	int enPisantIndex = -1;
+
+	bool isAI = false;
 };
 

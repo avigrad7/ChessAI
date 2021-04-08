@@ -28,6 +28,7 @@
     <ClCompile Include="Pawn.cpp" />
     <ClCompile Include="Queen.cpp" />
     <ClCompile Include="Rook.cpp" />
+    <ClCompile Include="Piece.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />

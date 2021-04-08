@@ -16,7 +16,7 @@ Game::~Game()
 
 void Game::startGame()
 {
-	while (m_Window->isOpen())
+	while (m_Window->isOpen() && !(isAI && !isWhiteTurn))
 	{
 		render();
 	}
@@ -290,6 +290,70 @@ void Game::movePiece(sf::RectangleShape& piece, const sf::Vector2f& moveTo)
 	piece.setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 }
 
+void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& moveTo)
+{
+	TypeOfPiece pieceType = getPieceType(index, color);
+	switch (pieceType)
+	{
+	case TypeOfPiece::WhiteRook:
+		whiteRooks[index].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index] = moveTo;
+		break;
+	case TypeOfPiece::BlackRook:
+		blackRooks[index].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index] = moveTo;
+		break;
+	case TypeOfPiece::WhiteBishop:
+		whiteBishops[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index - 2] = moveTo;
+		break;
+	case TypeOfPiece::BlackBishop:
+		blackBishops[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index - 2] = moveTo;
+		break;
+	case TypeOfPiece::WhiteKnight:
+		whiteKnights[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index - 4] = moveTo;
+		break;
+	case TypeOfPiece::BlackKnight:
+		blackKnights[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index - 4] = moveTo;
+		break;
+	case TypeOfPiece::WhitePawn:
+		whitePawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index - 6] = moveTo;
+		break;
+	case TypeOfPiece::BlackPawn:
+		blackPawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index - 6] = moveTo;
+		break;
+	case TypeOfPiece::WhiteQueen:
+		whiteQueens[index - (14 + (1 - whiteQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index - (14 + (1 - whiteQueens.size()))] = moveTo;
+		break;
+	case TypeOfPiece::BlackQueen:
+		blackQueens[index - (14 + (1 - blackQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index - (14 + (1 - blackQueens.size()))] = moveTo;
+		break;
+	case TypeOfPiece::WhiteKing:
+		whiteKing->getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[15] = moveTo;
+		break;
+	case TypeOfPiece::BlackKing:
+		blackKing->getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[15] = moveTo;
+		break;
+	}
+	if (isWhiteTurn)
+	{
+		isWhiteTurn = false;
+	}
+	else
+	{
+		isWhiteTurn = true;
+	}
+}
+
 void Game::castle(const CastlingOptions& whatCastle)
 {
 	switch (whatCastle)
@@ -393,269 +457,272 @@ void Game::render()
 
 void Game::onClickEvent()
 {
-	bool isOnPiece = false;
-	int index = 0;
-	int indexInPositions = 0;
-	sf::Vector2i mousePosition;
-	mousePosition.x = (int)(sf::Mouse::getPosition(*m_Window).x + m_SizeOfSquare) / (int)m_SizeOfSquare;
-	mousePosition.y = (int)(sf::Mouse::getPosition(*m_Window).y + m_SizeOfSquare) / (int)m_SizeOfSquare;
-	TypeOfPiece whatPiece = TypeOfPiece::WhiteRook;
-	for (unsigned int i = 0; i < 16; i++)
+	if (!(isAI && !isWhiteTurn))
 	{
-		index = i;
-		indexInPositions = i;
-		if (m_WhitePositions[i].x == mousePosition.x && m_WhitePositions[i].y == mousePosition.y)
+		bool isOnPiece = false;
+		int index = 0;
+		int indexInPositions = 0;
+		sf::Vector2i mousePosition;
+		mousePosition.x = (int)(sf::Mouse::getPosition(*m_Window).x + m_SizeOfSquare) / (int)m_SizeOfSquare;
+		mousePosition.y = (int)(sf::Mouse::getPosition(*m_Window).y + m_SizeOfSquare) / (int)m_SizeOfSquare;
+		TypeOfPiece whatPiece = TypeOfPiece::WhiteRook;
+		for (unsigned int i = 0; i < 16; i++)
 		{
-			whatPiece = getPieceType(i, WHITE);
-			i = 16;
-			isOnPiece = true;
+			index = i;
+			indexInPositions = i;
+			if (m_WhitePositions[i].x == mousePosition.x && m_WhitePositions[i].y == mousePosition.y)
+			{
+				whatPiece = getPieceType(i, WHITE);
+				i = 16;
+				isOnPiece = true;
+			}
+			else if (m_BlackPositions[i].x == mousePosition.x && m_BlackPositions[i].y == mousePosition.y)
+			{
+				whatPiece = getPieceType(i, BLACK);
+				i = 16;
+				isOnPiece = true;
+			}
 		}
-		else if (m_BlackPositions[i].x == mousePosition.x && m_BlackPositions[i].y == mousePosition.y)
+		std::vector<sf::Vector2f> allMoves;
+		if (isOnPiece)
 		{
-			whatPiece = getPieceType(i, BLACK);
-			i = 16;
-			isOnPiece = true;
-		}
-	}
-	std::vector<sf::Vector2f> allMoves;
-	if (isOnPiece)
-	{
-		sf::RectangleShape copyOfPiece;
-		copyOfPiece.setSize(sf::Vector2f(m_SizeOfSquare, m_SizeOfSquare));
-		copyOfPiece.setTexture(&Piece::m_GraphicTexture);
-		copyOfPiece.setPosition(sf::Vector2f((float)sf::Mouse::getPosition(*m_Window).x, (float)sf::Mouse::getPosition(*m_Window).y));
-		auto textureSize = Piece::m_GraphicTexture.getSize();
-		textureSize.x /= 6;
-		textureSize.y /= 2;
-		copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y * 0, textureSize.x, textureSize.y));
-		bool couldBeEnPisant = false;
-		switch (whatPiece)
-		{
-		case TypeOfPiece::WhiteRook:
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteRook);
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y * 0, textureSize.x, textureSize.y));
-			whiteRooks[index].moved();
-			break;
-		case TypeOfPiece::BlackRook:
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackRook);
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y, textureSize.x, textureSize.y));
-			blackRooks[index].moved();
-			break;
-		case TypeOfPiece::WhiteKnight:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 3, textureSize.y * 0, textureSize.x, textureSize.y));
-			index -= 2;
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKnight);
-			break;
-		case TypeOfPiece::BlackKnight:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 3, textureSize.y, textureSize.x, textureSize.y));
-			index -= 2;
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackKnight);
-			break;
-		case TypeOfPiece::WhiteBishop:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 2, textureSize.y * 0, textureSize.x, textureSize.y));
-			index -= 4;
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteBishop);
-			break;
-		case TypeOfPiece::BlackBishop:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 2, textureSize.y, textureSize.x, textureSize.y));
-			index -= 4;
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackBishop);
-			break;
-		case TypeOfPiece::WhitePawn:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 5, textureSize.y * 0, textureSize.x, textureSize.y));
-			index -= 6;
-			allMoves = genPieceMoves(index, TypeOfPiece::WhitePawn);
-			break;
-		case TypeOfPiece::BlackPawn:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 5, textureSize.y, textureSize.x, textureSize.y));
-			index -= 6;
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackPawn);
-			break;
-		case TypeOfPiece::WhiteQueen:
-			index -= 14 + (1 - whiteQueens.size());
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x, textureSize.y * 0, textureSize.x, textureSize.y));
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteQueen);
-			break;
-		case TypeOfPiece::BlackQueen:
-			index -= 14 + (1 - blackQueens.size());
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x, textureSize.y, textureSize.x, textureSize.y));
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackQueen);
-			break;
-		case TypeOfPiece::WhiteKing:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y * 0, textureSize.x, textureSize.y));
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKing);
-			break;
-		case TypeOfPiece::BlackKing:
-			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y, textureSize.x, textureSize.y));
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackKing);
-			break;
-		}
-		copyOfPiece.setOrigin(copyOfPiece.getSize().x / 2, copyOfPiece.getSize().y / 2);
-		while (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
+			sf::RectangleShape copyOfPiece;
+			copyOfPiece.setSize(sf::Vector2f(m_SizeOfSquare, m_SizeOfSquare));
+			copyOfPiece.setTexture(&Piece::m_GraphicTexture);
 			copyOfPiece.setPosition(sf::Vector2f((float)sf::Mouse::getPosition(*m_Window).x, (float)sf::Mouse::getPosition(*m_Window).y));
-			m_Window->clear();
-			drawBoard();
-			drawPieces(whatPiece, index);
-#if _DEBUG
-			drawValidMoves(allMoves);
-#endif
-			m_Window->draw(copyOfPiece);
-			m_Window->display();
-		}
-		int copyOfPieceX = (int)(copyOfPiece.getPosition().x + m_SizeOfSquare) / (int)m_SizeOfSquare;
-		int copyOfPieceY = (int)(copyOfPiece.getPosition().y + m_SizeOfSquare) / (int)m_SizeOfSquare;
-		if (isValidMove(whatPiece, copyOfPieceX, copyOfPieceY, index, indexInPositions))
-		{
+			auto textureSize = Piece::m_GraphicTexture.getSize();
+			textureSize.x /= 6;
+			textureSize.y /= 2;
+			copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y * 0, textureSize.x, textureSize.y));
+			bool couldBeEnPisant = false;
 			switch (whatPiece)
 			{
 			case TypeOfPiece::WhiteRook:
-				movePiece(whiteRooks[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				whiteRooks[index].moved();
-				m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-				m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+				allMoves = genPieceMoves(index, TypeOfPiece::WhiteRook);
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y * 0, textureSize.x, textureSize.y));
 				whiteRooks[index].moved();
 				break;
 			case TypeOfPiece::BlackRook:
-				movePiece(blackRooks[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackRook);
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 4, textureSize.y, textureSize.x, textureSize.y));
 				blackRooks[index].moved();
-				m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-				m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
-				break;
-			case TypeOfPiece::WhiteBishop:
-				movePiece(whiteBishops[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-				m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
-				blackRooks[index].moved();
-				break;
-			case TypeOfPiece::BlackBishop:
-				movePiece(blackBishops[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-				m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
 				break;
 			case TypeOfPiece::WhiteKnight:
-				movePiece(whiteKnights[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-				m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 3, textureSize.y * 0, textureSize.x, textureSize.y));
+				index -= 2;
+				allMoves = genPieceMoves(index, TypeOfPiece::WhiteKnight);
 				break;
 			case TypeOfPiece::BlackKnight:
-				movePiece(blackKnights[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-				m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 3, textureSize.y, textureSize.x, textureSize.y));
+				index -= 2;
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackKnight);
+				break;
+			case TypeOfPiece::WhiteBishop:
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 2, textureSize.y * 0, textureSize.x, textureSize.y));
+				index -= 4;
+				allMoves = genPieceMoves(index, TypeOfPiece::WhiteBishop);
+				break;
+			case TypeOfPiece::BlackBishop:
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 2, textureSize.y, textureSize.x, textureSize.y));
+				index -= 4;
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackBishop);
 				break;
 			case TypeOfPiece::WhitePawn:
-				if (m_WhitePositions[indexInPositions].y == 7 && copyOfPieceY == 5)
-				{
-					enPisantIndex = indexInPositions;
-					couldBeEnPisant = true;
-				}
-				if (enPisantIndex != -1 && (m_WhitePositions[indexInPositions].x == m_BlackPositions[enPisantIndex].x + 1 || m_WhitePositions[indexInPositions].x == m_BlackPositions[enPisantIndex].x - 1) && m_WhitePositions[indexInPositions].y == m_BlackPositions[enPisantIndex].y && copyOfPieceX == allMoves[allMoves.size() - 1].x && copyOfPieceY == allMoves[allMoves.size() - 1].y)
-				{
-					blackPawns[enPisantIndex - 6].deletePiece(m_BlackPositions, enPisantIndex);
-				}
-				movePiece(whitePawns[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-				m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
-				if (m_WhitePositions[indexInPositions].y == 1)
-				{
-					removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
-					whitePawns[index].deletePiece(m_WhitePositions, indexInPositions);
-					for (int i = indexInPositions; i < 16 - (int)whiteQueens.size(); i++)
-					{
-						m_WhitePositions[i] = m_WhitePositions[i + 1];
-					}
-					whitePawns.erase(whitePawns.begin() + index);
-					m_WhitePositions[14] = sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY);
-					whiteQueens.emplace_back(Queen(WHITE, *m_Window));
-					movePiece(whiteQueens[whiteQueens.size() - 1].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				}
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 5, textureSize.y * 0, textureSize.x, textureSize.y));
+				index -= 6;
+				allMoves = genPieceMoves(index, TypeOfPiece::WhitePawn);
 				break;
 			case TypeOfPiece::BlackPawn:
-				if (m_BlackPositions[indexInPositions].y == 2 && copyOfPieceY == 4)
-				{
-					enPisantIndex = indexInPositions;
-					couldBeEnPisant = true;
-				}
-				if (enPisantIndex != -1 && (m_BlackPositions[indexInPositions].x == m_WhitePositions[enPisantIndex].x + 1 || m_BlackPositions[indexInPositions].x == m_WhitePositions[enPisantIndex].x - 1) && m_BlackPositions[indexInPositions].y == m_WhitePositions[enPisantIndex].y && copyOfPieceX == allMoves[allMoves.size() - 1].x && copyOfPieceY == allMoves[allMoves.size() - 1].y)
-				{
-					whitePawns[enPisantIndex - 6].deletePiece(m_WhitePositions, enPisantIndex);
-				}
-				movePiece(blackPawns[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-				m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
-				if (m_BlackPositions[indexInPositions].y == 8)
-				{
-					removePiece(WHITE, sf::Vector2f(m_BlackPositions[indexInPositions].x, m_BlackPositions[indexInPositions].y));
-					blackPawns[index].deletePiece(m_BlackPositions, indexInPositions);
-					for (int i = indexInPositions; i < 16 - (int)blackQueens.size(); i++)
-					{
-						m_BlackPositions[i] = m_BlackPositions[i + 1];
-					}
-					blackPawns.erase(blackPawns.begin() + index);
-					m_BlackPositions[14] = sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY);
-					blackQueens.emplace_back(Queen(BLACK, *m_Window));
-					movePiece(blackQueens[blackQueens.size() - 1].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				}
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 5, textureSize.y, textureSize.x, textureSize.y));
+				index -= 6;
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackPawn);
 				break;
 			case TypeOfPiece::WhiteQueen:
-				movePiece(whiteQueens[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-				m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+				index -= 14 + (1 - whiteQueens.size());
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x, textureSize.y * 0, textureSize.x, textureSize.y));
+				allMoves = genPieceMoves(index, TypeOfPiece::WhiteQueen);
 				break;
 			case TypeOfPiece::BlackQueen:
-				movePiece(blackQueens[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-				m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-				m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+				index -= 14 + (1 - blackQueens.size());
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x, textureSize.y, textureSize.x, textureSize.y));
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackQueen);
 				break;
 			case TypeOfPiece::WhiteKing:
-				if (copyOfPieceX == 3 && !whiteKing->hasBeenMoved())
-				{
-					castle(CastlingOptions::bigWhite);
-				}
-				else if (copyOfPieceX == 7 && !whiteKing->hasBeenMoved())
-				{
-					castle(CastlingOptions::smallWhite);
-				}
-				else
-				{
-					movePiece(whiteKing->getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
-					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
-					whiteKing->moved();
-				}
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y * 0, textureSize.x, textureSize.y));
+				allMoves = genPieceMoves(index, TypeOfPiece::WhiteKing);
 				break;
 			case TypeOfPiece::BlackKing:
-				if (copyOfPieceX == 3 && !blackKing->hasBeenMoved())
+				copyOfPiece.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y, textureSize.x, textureSize.y));
+				allMoves = genPieceMoves(index, TypeOfPiece::BlackKing);
+				break;
+			}
+			copyOfPiece.setOrigin(copyOfPiece.getSize().x / 2, copyOfPiece.getSize().y / 2);
+			while (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				copyOfPiece.setPosition(sf::Vector2f((float)sf::Mouse::getPosition(*m_Window).x, (float)sf::Mouse::getPosition(*m_Window).y));
+				m_Window->clear();
+				drawBoard();
+				drawPieces(whatPiece, index);
+#if _DEBUG
+				drawValidMoves(allMoves);
+#endif
+				m_Window->draw(copyOfPiece);
+				m_Window->display();
+			}
+			int copyOfPieceX = (int)(copyOfPiece.getPosition().x + m_SizeOfSquare) / (int)m_SizeOfSquare;
+			int copyOfPieceY = (int)(copyOfPiece.getPosition().y + m_SizeOfSquare) / (int)m_SizeOfSquare;
+			if (isValidMove(whatPiece, copyOfPieceX, copyOfPieceY, index, indexInPositions))
+			{
+				switch (whatPiece)
 				{
-					castle(CastlingOptions::bigBlack);
+				case TypeOfPiece::WhiteRook:
+					movePiece(whiteRooks[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					whiteRooks[index].moved();
+					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+					whiteRooks[index].moved();
+					break;
+				case TypeOfPiece::BlackRook:
+					movePiece(blackRooks[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					blackRooks[index].moved();
+					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::WhiteBishop:
+					movePiece(whiteBishops[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+					blackRooks[index].moved();
+					break;
+				case TypeOfPiece::BlackBishop:
+					movePiece(blackBishops[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::WhiteKnight:
+					movePiece(whiteKnights[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::BlackKnight:
+					movePiece(blackKnights[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::WhitePawn:
+					if (m_WhitePositions[indexInPositions].y == 7 && copyOfPieceY == 5)
+					{
+						enPisantIndex = indexInPositions;
+						couldBeEnPisant = true;
+					}
+					if (enPisantIndex != -1 && (m_WhitePositions[indexInPositions].x == m_BlackPositions[enPisantIndex].x + 1 || m_WhitePositions[indexInPositions].x == m_BlackPositions[enPisantIndex].x - 1) && m_WhitePositions[indexInPositions].y == m_BlackPositions[enPisantIndex].y && copyOfPieceX == allMoves[allMoves.size() - 1].x && copyOfPieceY == allMoves[allMoves.size() - 1].y)
+					{
+						blackPawns[enPisantIndex - 6].deletePiece(m_BlackPositions, enPisantIndex);
+					}
+					movePiece(whitePawns[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+					if (m_WhitePositions[indexInPositions].y == 1)
+					{
+						removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
+						whitePawns[index].deletePiece(m_WhitePositions, indexInPositions);
+						for (int i = indexInPositions; i < 16 - (int)whiteQueens.size(); i++)
+						{
+							m_WhitePositions[i] = m_WhitePositions[i + 1];
+						}
+						whitePawns.erase(whitePawns.begin() + index);
+						m_WhitePositions[14] = sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY);
+						whiteQueens.emplace_back(Queen(WHITE, *m_Window));
+						movePiece(whiteQueens[whiteQueens.size() - 1].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					}
+					break;
+				case TypeOfPiece::BlackPawn:
+					if (m_BlackPositions[indexInPositions].y == 2 && copyOfPieceY == 4)
+					{
+						enPisantIndex = indexInPositions;
+						couldBeEnPisant = true;
+					}
+					if (enPisantIndex != -1 && (m_BlackPositions[indexInPositions].x == m_WhitePositions[enPisantIndex].x + 1 || m_BlackPositions[indexInPositions].x == m_WhitePositions[enPisantIndex].x - 1) && m_BlackPositions[indexInPositions].y == m_WhitePositions[enPisantIndex].y && copyOfPieceX == allMoves[allMoves.size() - 1].x && copyOfPieceY == allMoves[allMoves.size() - 1].y)
+					{
+						whitePawns[enPisantIndex - 6].deletePiece(m_WhitePositions, enPisantIndex);
+					}
+					movePiece(blackPawns[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+					if (m_BlackPositions[indexInPositions].y == 8)
+					{
+						removePiece(WHITE, sf::Vector2f(m_BlackPositions[indexInPositions].x, m_BlackPositions[indexInPositions].y));
+						blackPawns[index].deletePiece(m_BlackPositions, indexInPositions);
+						for (int i = indexInPositions; i < 16 - (int)blackQueens.size(); i++)
+						{
+							m_BlackPositions[i] = m_BlackPositions[i + 1];
+						}
+						blackPawns.erase(blackPawns.begin() + index);
+						m_BlackPositions[14] = sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY);
+						blackQueens.emplace_back(Queen(BLACK, *m_Window));
+						movePiece(blackQueens[blackQueens.size() - 1].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					}
+					break;
+				case TypeOfPiece::WhiteQueen:
+					movePiece(whiteQueens[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+					m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::BlackQueen:
+					movePiece(blackQueens[index].getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+					break;
+				case TypeOfPiece::WhiteKing:
+					if (copyOfPieceX == 3 && !whiteKing->hasBeenMoved())
+					{
+						castle(CastlingOptions::bigWhite);
+					}
+					else if (copyOfPieceX == 7 && !whiteKing->hasBeenMoved())
+					{
+						castle(CastlingOptions::smallWhite);
+					}
+					else
+					{
+						movePiece(whiteKing->getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+						m_WhitePositions[indexInPositions].x = (float)copyOfPieceX;
+						m_WhitePositions[indexInPositions].y = (float)copyOfPieceY;
+						whiteKing->moved();
+					}
+					break;
+				case TypeOfPiece::BlackKing:
+					if (copyOfPieceX == 3 && !blackKing->hasBeenMoved())
+					{
+						castle(CastlingOptions::bigBlack);
+					}
+					else if (copyOfPieceX == 7 && !blackKing->hasBeenMoved())
+					{
+						castle(CastlingOptions::smallBlack);
+					}
+					else
+					{
+						movePiece(blackKing->getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
+						m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
+						m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
+						blackKing->moved();
+					}
+					break;
 				}
-				else if (copyOfPieceX == 7 && !blackKing->hasBeenMoved())
+				if (isWhiteTurn)
 				{
-					castle(CastlingOptions::smallBlack);
+					removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
+					isWhiteTurn = false;
 				}
 				else
 				{
-					movePiece(blackKing->getPiece(), sf::Vector2f((float)copyOfPieceX, (float)copyOfPieceY));
-					m_BlackPositions[indexInPositions].x = (float)copyOfPieceX;
-					m_BlackPositions[indexInPositions].y = (float)copyOfPieceY;
-					blackKing->moved();
+					removePiece(WHITE, sf::Vector2f(m_BlackPositions[indexInPositions].x, m_BlackPositions[indexInPositions].y));
+					isWhiteTurn = true;
 				}
-				break;
-			}
-			if (isWhiteTurn)
-			{
-				removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
-				isWhiteTurn = false;
-			}
-			else
-			{
-				removePiece(WHITE, sf::Vector2f(m_BlackPositions[indexInPositions].x, m_BlackPositions[indexInPositions].y));
-				isWhiteTurn = true;
-			}
-			gameEnd();
-			if (!couldBeEnPisant)
-			{
-				enPisantIndex = -1;
+				gameEnd();
+				if (!couldBeEnPisant)
+				{
+					enPisantIndex = -1;
+				}
 			}
 		}
 	}
@@ -1733,6 +1800,33 @@ void Game::gameEnd()
 		m_Window->display();
 		std::cin.get();
 		m_Window->close();
+	}
+}
+
+bool Game::isGameEnd()
+{
+	std::vector<sf::Vector2f> allMoves;
+	if (isWhiteTurn)
+	{
+		allMoves = genAllMoves(WHITE);
+	}
+	else
+	{
+		allMoves = genAllMoves(BLACK);
+	}
+	if (allMoves.size() == 0)
+	{
+		m_Window->clear();
+		drawBoard();
+		drawPieces();
+		m_Window->display();
+		std::cin.get();
+		m_Window->close();
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
