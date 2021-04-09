@@ -1,9 +1,9 @@
-#include"Game.h"
+#include"AI.h"
 
 sf::Texture Piece::m_GraphicTexture;
 
 int main()
 {
-	Game game;
+	AI game;
 	game.startGame();
 }

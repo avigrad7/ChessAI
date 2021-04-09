@@ -304,20 +304,20 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteBishop:
-		whiteBishops[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index - 2] = moveTo;
-		break;
-	case TypeOfPiece::BlackBishop:
-		blackBishops[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index - 2] = moveTo;
-		break;
-	case TypeOfPiece::WhiteKnight:
-		whiteKnights[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		whiteBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 		m_WhitePositions[index - 4] = moveTo;
 		break;
-	case TypeOfPiece::BlackKnight:
-		blackKnights[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+	case TypeOfPiece::BlackBishop:
+		blackBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 		m_BlackPositions[index - 4] = moveTo;
+		break;
+	case TypeOfPiece::WhiteKnight:
+		whiteKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[index - 2] = moveTo;
+		break;
+	case TypeOfPiece::BlackKnight:
+		blackKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[index - 2] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
 		whitePawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
@@ -1820,7 +1820,6 @@ bool Game::isGameEnd()
 		drawBoard();
 		drawPieces();
 		m_Window->display();
-		std::cin.get();
 		m_Window->close();
 		return true;
 	}

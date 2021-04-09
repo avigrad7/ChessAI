@@ -13,6 +13,12 @@ public:
 	~Game();
 public:
 	/*
+	* gets if it is white's turn
+	* 
+	* @return true if it is white's turn and false if not
+	*/
+	bool getIsWhitesTurn() { return isWhiteTurn; }
+	/*
 	* Moves a piece to a new place on the board and sets it's position
 	*
 	* @param color: the color of piece you are moving
