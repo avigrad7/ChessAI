@@ -21,7 +21,8 @@ void AI::startGame()
 
 AI::BestMoveAndPiece AI::genBestMove()
 {
-	std::vector<sf::Vector2f> testing = game.genAllMoves(BLACK);
-	BestMoveAndPiece test(testing[rand() / ((RAND_MAX + 1u) / testing.size())], rand() / ((RAND_MAX + 1u) / 16));
-	return test;
+	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK);
+	int randomNum = rand() / ((RAND_MAX + 1u) / allMoves.size());
+	BestMoveAndPiece bestMove(allMoves[randomNum].moves[rand() / ((RAND_MAX + 1u) / allMoves[randomNum].moves.size())], allMoves[randomNum].piece);
+	return bestMove;
 }

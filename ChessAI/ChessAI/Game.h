@@ -12,10 +12,22 @@ public:
 	Game();
 	~Game();
 public:
+	struct PieceAndMoves
+	{
+		PieceAndMoves(int whatPiece, std::vector<sf::Vector2f> allMoves)
+		{
+			piece = whatPiece;
+			moves = allMoves;
+		}
+		int piece;
+		std::vector<sf::Vector2f> moves;
+	};
+public:
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color);
 	/*
-	* gets if it is white's turn
+	* Gets if it is white's turn
 	* 
-	* @return true if it is white's turn and false if not
+	* @return True if it is white's turn and false if not
 	*/
 	bool getIsWhitesTurn() { return isWhiteTurn; }
 	/*

@@ -305,35 +305,35 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 		break;
 	case TypeOfPiece::WhiteBishop:
 		whiteBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index - 4] = moveTo;
+		m_WhitePositions[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackBishop:
 		blackBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index - 4] = moveTo;
+		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKnight:
 		whiteKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index - 2] = moveTo;
+		m_WhitePositions[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackKnight:
 		blackKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index - 2] = moveTo;
+		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
 		whitePawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index - 6] = moveTo;
+		m_WhitePositions[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackPawn:
 		blackPawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index - 6] = moveTo;
+		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteQueen:
 		whiteQueens[index - (14 + (1 - whiteQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index - (14 + (1 - whiteQueens.size()))] = moveTo;
+		m_WhitePositions[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackQueen:
 		blackQueens[index - (14 + (1 - blackQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index - (14 + (1 - blackQueens.size()))] = moveTo;
+		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKing:
 		whiteKing->getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
@@ -347,10 +347,13 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	if (isWhiteTurn)
 	{
 		isWhiteTurn = false;
+		removePiece(BLACK, m_WhitePositions[index]);
 	}
 	else
 	{
 		isWhiteTurn = true;
+		removePiece(WHITE, m_BlackPositions[index]);
+
 	}
 }
 
@@ -710,12 +713,12 @@ void Game::onClickEvent()
 				}
 				if (isWhiteTurn)
 				{
-					removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
+					removePiece(BLACK, m_WhitePositions[indexInPositions]);
 					isWhiteTurn = false;
 				}
 				else
 				{
-					removePiece(WHITE, sf::Vector2f(m_BlackPositions[indexInPositions].x, m_BlackPositions[indexInPositions].y));
+					removePiece(WHITE, m_BlackPositions[indexInPositions]);
 					isWhiteTurn = true;
 				}
 				gameEnd();
@@ -753,7 +756,10 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::WhitePawn));
 		}
-		temp.push_back(genPieceMoves(0, TypeOfPiece::WhiteQueen));
+		for (int i = 0; i < whiteQueens.size(); i++)
+		{
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteQueen));
+		}
 		temp.push_back(genPieceMoves(0, TypeOfPiece::WhiteKing));
 	}
 	else
@@ -762,7 +768,10 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackPawn));
 		}
-		temp.push_back(genPieceMoves(0, TypeOfPiece::BlackQueen));
+		for (int i = 0; i < blackQueens.size(); i++)
+		{
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackQueen));
+		}
 		temp.push_back(genPieceMoves(0, TypeOfPiece::BlackKing));
 	}
 
@@ -771,6 +780,80 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 		for (int u = 0; u < (int)temp[i].size(); u++)
 		{
 			allMoves.push_back(temp[i][u]);
+		}
+	}
+	return allMoves;
+}
+
+std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color)
+{
+	std::vector<PieceAndMoves> allMoves;
+	if (color == WHITE)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (!whiteRooks[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::WhiteRook)));
+			}
+			if (!whiteKnights[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::WhiteKnight)));
+			}
+			if (!whiteBishops[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::WhiteBishop)));
+			}
+		}
+		for (int i = 0; i < whitePawns.size(); i++)
+		{
+			if (!whitePawns[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::WhitePawn)));
+			}
+		}
+		for (int i = 0; i < whiteQueens.size(); i++)
+		{
+			allMoves.push_back(PieceAndMoves(i + 6 + whitePawns.size(), genPieceMoves(i, TypeOfPiece::WhiteQueen)));
+		}
+		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::WhiteKing)));
+	}
+	else
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (!blackRooks[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::BlackRook)));
+			}
+			if (!blackKnights[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::BlackKnight)));
+			}
+			if (!blackBishops[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::BlackBishop)));
+			}
+		}
+		for (int i = 0; i < blackPawns.size(); i++)
+		{
+			if (!blackPawns[i].isDeleted())
+			{
+				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::BlackPawn)));
+			}
+		}
+		for (int i = 0; i < blackQueens.size(); i++)
+		{
+			allMoves.push_back(PieceAndMoves(i + 6 + blackPawns.size(), genPieceMoves(i, TypeOfPiece::BlackQueen)));
+		}
+		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::BlackKing)));
+	}
+	for (int i = 0; i < allMoves.size(); i++)
+	{
+		if (allMoves[i].moves.size() == 0)
+		{
+			allMoves.erase(allMoves.begin() + i);
+			i--;
 		}
 	}
 	return allMoves;
