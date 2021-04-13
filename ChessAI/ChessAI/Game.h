@@ -23,6 +23,53 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
+	void deletePiece(TypeOfPiece piece, int index);
+	/*
+	* Generates the possible moves of a specific piece
+	*
+	* @param index: The index of the piece in its array
+	* @param pieceType: The type of piece it is
+	*
+	* @return A vector of all the possible moves
+	*/
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType);
+	/*
+	* Returns the enPisant index
+	* 
+	* @retun the positions of the piece that could be enpisnted
+	*/
+	int getEnPisantIndex() { return enPisantIndex; }
+	/*
+	* sets the en pisant index
+	* 
+	* @param index: the index of the piece that could be enpisanted
+	* 
+	* @return none
+	*/
+	void setEnPisantIndex(int index) { enPisantIndex = index; }
+	/*
+	* gets the size of the pawn vector
+	* 
+	* @param color: the color of the pawns that you are looking for
+	* 
+	* @return the size of a pawn vector
+	*/
+	int getPawnSize(Color color);
+	/*
+	* gets the size of the queen vector
+	*
+	* @param color: the color of the queens that you are looking for
+	*
+	* @return the size of a queen vector
+	*/
+	int getQueenSize(Color color);
+	/*
+	* Generates a vector of moves and what piece could move there
+	* 
+	* @param color: The color of the pieces that you want to generate the moves of
+	* 
+	* @retun An array of moves and their piece
+	*/
 	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color);
 	/*
 	* Gets if it is white's turn
@@ -190,15 +237,6 @@ private:
 	* @return True if it is a valid castle. Fasle otherwise
 	*/
 	bool isValidCastle(const CastlingOptions& whatCastle);
-	/*
-	* Generates the possible moves of a specific piece
-	*
-	* @param index: The index of the piece in its array
-	* @param pieceType: The type of piece it is
-	*
-	* @return A vector of all the possible moves
-	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType);
 	/*
 	* Checks if a king is in check
 	*

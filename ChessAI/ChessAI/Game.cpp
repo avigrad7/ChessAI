@@ -756,7 +756,7 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::WhitePawn));
 		}
-		for (int i = 0; i < whiteQueens.size(); i++)
+		for (int i = 0; i < (int)whiteQueens.size(); i++)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteQueen));
 		}
@@ -768,7 +768,7 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackPawn));
 		}
-		for (int i = 0; i < blackQueens.size(); i++)
+		for (int i = 0; i < (int)blackQueens.size(); i++)
 		{
 			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackQueen));
 		}
@@ -805,14 +805,14 @@ std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color)
 				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::WhiteBishop)));
 			}
 		}
-		for (int i = 0; i < whitePawns.size(); i++)
+		for (int i = 0; i < (int)whitePawns.size(); i++)
 		{
 			if (!whitePawns[i].isDeleted())
 			{
 				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::WhitePawn)));
 			}
 		}
-		for (int i = 0; i < whiteQueens.size(); i++)
+		for (int i = 0; i < (int)whiteQueens.size(); i++)
 		{
 			allMoves.push_back(PieceAndMoves(i + 6 + whitePawns.size(), genPieceMoves(i, TypeOfPiece::WhiteQueen)));
 		}
@@ -835,20 +835,20 @@ std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color)
 				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::BlackBishop)));
 			}
 		}
-		for (int i = 0; i < blackPawns.size(); i++)
+		for (int i = 0; i < (int)blackPawns.size(); i++)
 		{
 			if (!blackPawns[i].isDeleted())
 			{
 				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::BlackPawn)));
 			}
 		}
-		for (int i = 0; i < blackQueens.size(); i++)
+		for (int i = 0; i < (int)blackQueens.size(); i++)
 		{
 			allMoves.push_back(PieceAndMoves(i + 6 + blackPawns.size(), genPieceMoves(i, TypeOfPiece::BlackQueen)));
 		}
 		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::BlackKing)));
 	}
-	for (int i = 0; i < allMoves.size(); i++)
+	for (int i = 0; i < (int)allMoves.size(); i++)
 	{
 		if (allMoves[i].moves.size() == 0)
 		{
@@ -1314,6 +1314,29 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	return allMoves;
 }
 
+int Game::getPawnSize(Color color)
+{
+	if (color == WHITE)
+	{
+		return (int)whitePawns.size();
+	}
+	else
+	{
+		return (int)blackPawns.size();
+	}
+}
+
+int Game::getQueenSize(Color color)
+{
+	if (color == WHITE)
+	{
+		return (int)whiteQueens.size();
+	}
+	else
+	{
+		return (int)blackQueens.size();
+	}
+}
 bool Game::isBeingChecked(const Color& color)
 {
 	std::vector<sf::Vector2f> allMoves;
@@ -1615,6 +1638,50 @@ void Game::drawValidMoves(const std::vector<sf::Vector2f>& allMoves)
 	}
 }
 #endif
+
+void Game::deletePiece(TypeOfPiece piece, int index)
+{
+	switch (piece)
+	{
+	case TypeOfPiece::WhiteRook:
+		whiteRooks[index].deletePiece(m_WhitePositions, index);
+		break;
+	case TypeOfPiece::BlackRook:
+		blackRooks[index].deletePiece(m_BlackPositions, index);
+		break;
+	case TypeOfPiece::WhiteBishop:
+		whiteBishops[index - 4].deletePiece(m_WhitePositions, index);
+		break;
+	case TypeOfPiece::BlackBishop:
+		blackBishops[index - 4].deletePiece(m_BlackPositions, index);
+		break;
+	case TypeOfPiece::WhiteKnight:
+		whiteKnights[index - 2].deletePiece(m_WhitePositions, index);
+		break;
+	case TypeOfPiece::BlackKnight:
+		blackKnights[index - 2].deletePiece(m_BlackPositions, index);
+		break;
+	case TypeOfPiece::WhitePawn:
+		whitePawns[index - 6].deletePiece(m_WhitePositions, index);
+		break;
+	case TypeOfPiece::BlackPawn:
+		blackPawns[index - 6].deletePiece(m_BlackPositions, index);
+		break;
+	case TypeOfPiece::WhiteQueen:
+		whiteQueens[index - 6 - whitePawns.size()].deletePiece(m_WhitePositions, index);
+		break;
+	case TypeOfPiece::BlackQueen:
+		blackQueens[index - 6 - blackPawns.size()].deletePiece(m_BlackPositions, index);
+		break;
+	case TypeOfPiece::WhiteKing:
+		whiteKing->deletePiece(m_WhitePositions, 15);
+		break;
+	case TypeOfPiece::BlackKing:
+		blackKing->deletePiece(m_BlackPositions, 15);
+		break;
+	}
+}
+
 void Game::removePiece(const Color& color, const sf::Vector2f& position)
 {
 	int I_Index = 0;
