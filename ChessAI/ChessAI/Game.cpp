@@ -357,7 +357,7 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	}
 }
 
-void Game::castle(const CastlingOptions& whatCastle)
+void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos) 
 {
 	switch (whatCastle)
 	{
@@ -366,32 +366,32 @@ void Game::castle(const CastlingOptions& whatCastle)
 		whiteRooks[0].moved();
 		movePiece(whiteKing->getPiece(), sf::Vector2f(3, 8));
 		whiteKing->moved();
-		m_WhitePositions[0] = sf::Vector2f(4, 8);
-		m_WhitePositions[15] = sf::Vector2f(3, 8);
+		whitePos[0] = sf::Vector2f(4, 8);
+		whitePos[15] = sf::Vector2f(3, 8);
 		break;
 	case CastlingOptions::smallWhite:
 		movePiece(whiteRooks[1].getPiece(), sf::Vector2f(6, 8));
 		whiteRooks[1].moved();
 		movePiece(whiteKing->getPiece(), sf::Vector2f(7, 8));
 		whiteKing->moved();
-		m_WhitePositions[1] = sf::Vector2f(6, 8);
-		m_WhitePositions[15] = sf::Vector2f(7, 8);
+		whitePos[1] = sf::Vector2f(6, 8);
+		whitePos[15] = sf::Vector2f(7, 8);
 		break;
 	case CastlingOptions::bigBlack:
 		movePiece(blackRooks[0].getPiece(), sf::Vector2f(4, 1));
 		blackRooks[0].moved();
 		movePiece(blackKing->getPiece(), sf::Vector2f(3, 1));
 		blackKing->moved();
-		m_BlackPositions[0] = sf::Vector2f(4, 1);
-		m_BlackPositions[15] = sf::Vector2f(3, 1);
+		blackPos[0] = sf::Vector2f(4, 1);
+		blackPos[15] = sf::Vector2f(3, 1);
 		break;
 	case CastlingOptions::smallBlack:
 		movePiece(blackRooks[1].getPiece(), sf::Vector2f(6, 1));
 		blackRooks[1].moved();
 		movePiece(blackKing->getPiece(), sf::Vector2f(7, 1));
 		blackKing->moved();
-		m_BlackPositions[1] = sf::Vector2f(6, 1);
-		m_BlackPositions[15] = sf::Vector2f(7, 1);
+		blackPos[1] = sf::Vector2f(6, 1);
+		blackPos[15] = sf::Vector2f(7, 1);
 		break;
 	}
 }
@@ -785,7 +785,7 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 	return allMoves;
 }
 
-std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color)
+std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
 {
 	std::vector<PieceAndMoves> allMoves;
 	if (color == WHITE)
@@ -947,6 +947,11 @@ std::vector<sf::Vector2f> Game::genAllBaseLevelMoves(const Color& color)
 
 std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiece& pieceType)
 {
+	return genPieceMoves(index, pieceType, m_WhitePositions, m_BlackPositions);
+}
+
+std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
+{
 	std::vector<sf::Vector2f> allMoves;
 	bool check = false;
 	bool checkingTakePiece = false;
@@ -962,75 +967,75 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	case TypeOfPiece::WhiteRook:
 		if (!whiteRooks[index].isDeleted())
 		{
-			allMoves = whiteRooks[index].possibleMoves(m_WhitePositions, m_BlackPositions, index);
+			allMoves = whiteRooks[index].possibleMoves(whitePos, blackPos, index);
 		}
 		break;
 	case TypeOfPiece::BlackRook:
 		if (!blackRooks[index].isDeleted())
 		{
-			allMoves = blackRooks[index].possibleMoves(m_WhitePositions, m_BlackPositions, index);
+			allMoves = blackRooks[index].possibleMoves(whitePos, blackPos, index);
 		}
 		break;
 	case TypeOfPiece::WhiteBishop:
 		if (!whiteBishops[index].isDeleted())
 		{
-			allMoves = whiteBishops[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 4);
+			allMoves = whiteBishops[index].possibleMoves(whitePos, blackPos, index + 4);
 		}
 		break;
 	case TypeOfPiece::BlackBishop:
 		if (!blackBishops[index].isDeleted())
 		{
-			allMoves = blackBishops[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 4);
+			allMoves = blackBishops[index].possibleMoves(whitePos, blackPos, index + 4);
 		}
 		break;
 	case TypeOfPiece::WhiteKnight:
 		if (!whiteKnights[index].isDeleted())
 		{
-			allMoves = whiteKnights[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 2);
+			allMoves = whiteKnights[index].possibleMoves(whitePos, blackPos, index + 2);
 		}
 		break;
 	case TypeOfPiece::BlackKnight:
 		if (!blackKnights[index].isDeleted())
 		{
-			allMoves = blackKnights[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 2);
+			allMoves = blackKnights[index].possibleMoves(whitePos, blackPos, index + 2);
 		}
 		break;
 	case TypeOfPiece::WhitePawn:
 		if (!whitePawns[index].isDeleted())
 		{
-			allMoves = whitePawns[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 6);
-			if (enPisantIndex != -1 && (m_WhitePositions[index + 6].x == m_BlackPositions[enPisantIndex].x + 1 || m_WhitePositions[index + 6].x == m_BlackPositions[enPisantIndex].x - 1) && m_WhitePositions[index + 6].y == m_BlackPositions[enPisantIndex].y)
+			allMoves = whitePawns[index].possibleMoves(whitePos, blackPos, index + 6);
+			if (enPisantIndex != -1 && (whitePos[index + 6].x == blackPos[enPisantIndex].x + 1 || whitePos[index + 6].x == blackPos[enPisantIndex].x - 1) && whitePos[index + 6].y == blackPos[enPisantIndex].y)
 			{
-				allMoves.push_back(sf::Vector2f(m_BlackPositions[enPisantIndex].x, m_BlackPositions[enPisantIndex].y - 1));
+				allMoves.push_back(sf::Vector2f(blackPos[enPisantIndex].x, blackPos[enPisantIndex].y - 1));
 			}
 		}
 		break;
 	case TypeOfPiece::BlackPawn:
 		if (!blackPawns[index].isDeleted())
 		{
-			allMoves = blackPawns[index].possibleMoves(m_WhitePositions, m_BlackPositions, index + 6);
-			if (enPisantIndex != -1 && (m_BlackPositions[index + 6].x == m_WhitePositions[enPisantIndex].x + 1 || m_BlackPositions[index + 6].x == m_WhitePositions[enPisantIndex].x - 1) && m_BlackPositions[index + 6].y == m_WhitePositions[enPisantIndex].y)
+			allMoves = blackPawns[index].possibleMoves(whitePos, blackPos, index + 6);
+			if (enPisantIndex != -1 && (blackPos[index + 6].x == whitePos[enPisantIndex].x + 1 || blackPos[index + 6].x == whitePos[enPisantIndex].x - 1) && blackPos[index + 6].y == whitePos[enPisantIndex].y)
 			{
-				allMoves.push_back(sf::Vector2f(m_WhitePositions[enPisantIndex].x, m_WhitePositions[enPisantIndex].y + 1));
+				allMoves.push_back(sf::Vector2f(whitePos[enPisantIndex].x, whitePos[enPisantIndex].y + 1));
 			}
 		}
 		break;
 	case TypeOfPiece::WhiteQueen:
 		if (!whiteQueens[index].isDeleted())
 		{
-			allMoves = whiteQueens[index].possibleMoves(m_WhitePositions, m_BlackPositions, 15 - whiteQueens.size() + index);
+			allMoves = whiteQueens[index].possibleMoves(whitePos, blackPos, 15 - whiteQueens.size() + index);
 		}
 		break;
 	case TypeOfPiece::BlackQueen:
 		if (!blackQueens[index].isDeleted())
 		{
-			allMoves = blackQueens[index].possibleMoves(m_WhitePositions, m_BlackPositions, 15 - blackQueens.size() + index);
+			allMoves = blackQueens[index].possibleMoves(whitePos, blackPos, 15 - blackQueens.size() + index);
 		}
 		break;
 	case TypeOfPiece::WhiteKing:
 		if (!whiteKing->isDeleted())
 		{
-			allMoves = whiteKing->possibleMoves(m_WhitePositions, m_BlackPositions, 15);
+			allMoves = whiteKing->possibleMoves(whitePos, blackPos, 15);
 			if (isValidCastle(CastlingOptions::bigWhite))
 			{
 				allMoves.push_back(sf::Vector2f(3, 8));
@@ -1039,35 +1044,35 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			{
 				allMoves.push_back(sf::Vector2f(7, 8));
 			}
-			currentPos = m_WhitePositions[15];
+			currentPos = whitePos[15];
 			for (int i = 0; i < (int)allMoves.size(); i++)
 			{
 				for (int u = 0; u < 16; u++)
 				{
-					if (allMoves[i] == m_BlackPositions[u])
+					if (allMoves[i] == blackPos[u])
 					{
-						tookPiecePos = m_BlackPositions[u];
-						m_BlackPositions[u] = sf::Vector2f(1000, 1000);
+						tookPiecePos = blackPos[u];
+						blackPos[u] = sf::Vector2f(1000, 1000);
 						checkingTakePiece = true;
 						indexOfTookPiece = u;
 						u = 16;
 					}
 				}
-				m_WhitePositions[15] = allMoves[i];
+				whitePos[15] = allMoves[i];
 				if (isBeingChecked(WHITE))
 				{
-					m_WhitePositions[15] = currentPos;
+					whitePos[15] = currentPos;
 					allMoves.erase(allMoves.begin() + i);
 					i--;
 				}
 				else
 				{
-					m_WhitePositions[15] = currentPos;
+					whitePos[15] = currentPos;
 				}
 				if (checkingTakePiece)
 				{
 					checkingTakePiece = false;
-					m_BlackPositions[indexOfTookPiece] = tookPiecePos;
+					blackPos[indexOfTookPiece] = tookPiecePos;
 				}
 			}
 		}
@@ -1075,7 +1080,7 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	case TypeOfPiece::BlackKing:
 		if (!blackKing->isDeleted())
 		{
-			allMoves = blackKing->possibleMoves(m_WhitePositions, m_BlackPositions, 15);
+			allMoves = blackKing->possibleMoves(whitePos, blackPos, 15);
 			if (isValidCastle(CastlingOptions::bigBlack))
 			{
 				allMoves.push_back(sf::Vector2f(3, 1));
@@ -1084,35 +1089,35 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			{
 				allMoves.push_back(sf::Vector2f(7, 1));
 			}
-			currentPos = m_BlackPositions[15];
+			currentPos = blackPos[15];
 			for (int i = 0; i < (int)allMoves.size(); i++)
 			{
 				for (int u = 0; u < 16; u++)
 				{
-					if (allMoves[i] == m_WhitePositions[u])
+					if (allMoves[i] == whitePos[u])
 					{
-						tookPiecePos = m_WhitePositions[u];
-						m_WhitePositions[u] = sf::Vector2f(1000, 1000);
+						tookPiecePos = whitePos[u];
+						whitePos[u] = sf::Vector2f(1000, 1000);
 						checkingTakePiece = true;
 						indexOfTookPiece = u;
 						u = 16;
 					}
 				}
-				m_BlackPositions[15] = allMoves[i];
+				blackPos[15] = allMoves[i];
 				if (isBeingChecked(BLACK))
 				{
-					m_BlackPositions[15] = currentPos;
+					blackPos[15] = currentPos;
 					allMoves.erase(allMoves.begin() + i);
 					i--;
 				}
 				else
 				{
-					m_BlackPositions[15] = currentPos;
+					blackPos[15] = currentPos;
 				}
 				if (checkingTakePiece)
 				{
 					checkingTakePiece = false;
-					m_WhitePositions[indexOfTookPiece] = tookPiecePos;
+					whitePos[indexOfTookPiece] = tookPiecePos;
 				}
 			}
 		}
@@ -1129,181 +1134,181 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			switch (pieceType)
 			{
 			case TypeOfPiece::WhiteRook:
-				currentPosOfPiece = m_WhitePositions[index];
-				m_WhitePositions[index] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = whitePos[index];
+				whitePos[index] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(BLACK);
-				m_WhitePositions[index] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_BlackPositions[whereIsPiece] == allMoves[i]))
+				whitePos[index] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_WhitePositions[index];
-					m_WhitePositions[index] = allMoves[i];
+					currentPos = whitePos[index];
+					whitePos[index] = allMoves[i];
 					if (isBeingChecked(WHITE))
 					{
-						m_WhitePositions[index] = currentPos;
+						whitePos[index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_WhitePositions[index] = currentPos;
+					whitePos[index] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackRook:
-				currentPosOfPiece = m_BlackPositions[index];
-				m_BlackPositions[index] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = blackPos[index];
+				blackPos[index] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(WHITE);
-				m_BlackPositions[index] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_WhitePositions[whereIsPiece] == allMoves[i]))
+				blackPos[index] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_BlackPositions[index];
-					m_BlackPositions[index] = allMoves[i];
+					currentPos = blackPos[index];
+					blackPos[index] = allMoves[i];
 					if (isBeingChecked(BLACK))
 					{
-						m_BlackPositions[index] = currentPos;
+						blackPos[index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_BlackPositions[index] = currentPos;
+					blackPos[index] = currentPos;
 				}
 				break;
 			case TypeOfPiece::WhiteBishop:
-				currentPosOfPiece = m_WhitePositions[index + 4];
-				m_WhitePositions[index + 4] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = whitePos[index + 4];
+				whitePos[index + 4] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(BLACK);
-				m_WhitePositions[index + 4] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_BlackPositions[whereIsPiece] == allMoves[i]))
+				whitePos[index + 4] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_WhitePositions[index + 4];
-					m_WhitePositions[index + 4] = allMoves[i];
+					currentPos = whitePos[index + 4];
+					whitePos[index + 4] = allMoves[i];
 					if (isBeingChecked(WHITE))
 					{
-						m_WhitePositions[index + 4] = currentPos;
+						whitePos[index + 4] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_WhitePositions[index + 4] = currentPos;
+					whitePos[index + 4] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackBishop:
-				currentPosOfPiece = m_BlackPositions[index + 4];
-				m_BlackPositions[index + 4] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = blackPos[index + 4];
+				blackPos[index + 4] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(WHITE);
-				m_BlackPositions[index + 4] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_WhitePositions[whereIsPiece] == allMoves[i]))
+				blackPos[index + 4] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_BlackPositions[index + 4];
-					m_BlackPositions[index + 4] = allMoves[i];
+					currentPos = blackPos[index + 4];
+					blackPos[index + 4] = allMoves[i];
 					if (isBeingChecked(BLACK))
 					{
-						m_BlackPositions[index + 4] = currentPos;
+						blackPos[index + 4] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_BlackPositions[index + 4] = currentPos;
+					blackPos[index + 4] = currentPos;
 				}
 				break;
 			case TypeOfPiece::WhiteKnight:
-				currentPosOfPiece = m_WhitePositions[index + 2];
-				m_WhitePositions[index + 2] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = whitePos[index + 2];
+				whitePos[index + 2] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(BLACK);
-				m_WhitePositions[index + 2] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_BlackPositions[whereIsPiece] == allMoves[i]))
+				whitePos[index + 2] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_WhitePositions[index + 2];
-					m_WhitePositions[index + 2] = allMoves[i];
+					currentPos = whitePos[index + 2];
+					whitePos[index + 2] = allMoves[i];
 					if (isBeingChecked(WHITE))
 					{
-						m_WhitePositions[index + 2] = currentPos;
+						whitePos[index + 2] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_WhitePositions[index + 2] = currentPos;
+					whitePos[index + 2] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackKnight:
-				currentPosOfPiece = m_BlackPositions[index + 2];
-				m_BlackPositions[index + 2] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = blackPos[index + 2];
+				blackPos[index + 2] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(WHITE);
-				m_BlackPositions[index + 2] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_WhitePositions[whereIsPiece] == allMoves[i]))
+				blackPos[index + 2] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_BlackPositions[index + 2];
-					m_BlackPositions[index + 2] = allMoves[i];
+					currentPos = blackPos[index + 2];
+					blackPos[index + 2] = allMoves[i];
 					if (isBeingChecked(BLACK))
 					{
-						m_BlackPositions[index + 2] = currentPos;
+						blackPos[index + 2] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_BlackPositions[index + 2] = currentPos;
+					blackPos[index + 2] = currentPos;
 				}
 				break;
 			case TypeOfPiece::WhitePawn:
-				currentPosOfPiece = m_WhitePositions[index + 6];
-				m_WhitePositions[index + 6] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = whitePos[index + 6];
+				whitePos[index + 6] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(BLACK);
-				m_WhitePositions[index + 6] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_BlackPositions[whereIsPiece] == allMoves[i]))
+				whitePos[index + 6] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_WhitePositions[index + 6];
-					m_WhitePositions[index + 6] = allMoves[i];
+					currentPos = whitePos[index + 6];
+					whitePos[index + 6] = allMoves[i];
 					if (isBeingChecked(WHITE))
 					{
-						m_WhitePositions[index + 6] = currentPos;
+						whitePos[index + 6] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_WhitePositions[index + 6] = currentPos;
+					whitePos[index + 6] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackPawn:
-				currentPosOfPiece = m_BlackPositions[index + 6];
-				m_BlackPositions[index + 6] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = blackPos[index + 6];
+				blackPos[index + 6] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(WHITE);
-				m_BlackPositions[index + 6] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_WhitePositions[whereIsPiece] == allMoves[i]))
-					currentPos = m_BlackPositions[index + 6];
-				m_BlackPositions[index + 6] = allMoves[i];
+				blackPos[index + 6] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
+					currentPos = blackPos[index + 6];
+				blackPos[index + 6] = allMoves[i];
 				if (isBeingChecked(BLACK))
 				{
-					m_BlackPositions[index + 6] = currentPos;
+					blackPos[index + 6] = currentPos;
 					allMoves.erase(allMoves.begin() + i);
 					i--;
 				}
-				m_BlackPositions[index + 6] = currentPos;
+				blackPos[index + 6] = currentPos;
 				break;
 			case TypeOfPiece::WhiteQueen:
-				currentPosOfPiece = m_WhitePositions[15 - whiteQueens.size() + index];
-				m_WhitePositions[15 - whiteQueens.size() + index] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = whitePos[15 - whiteQueens.size() + index];
+				whitePos[15 - whiteQueens.size() + index] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(BLACK);
-				m_WhitePositions[15 - whiteQueens.size() + index] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_BlackPositions[whereIsPiece] == allMoves[i]))
+				whitePos[15 - whiteQueens.size() + index] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_WhitePositions[15 - whiteQueens.size() + index];
-					m_WhitePositions[15 - whiteQueens.size() + index] = allMoves[i];
+					currentPos = whitePos[15 - whiteQueens.size() + index];
+					whitePos[15 - whiteQueens.size() + index] = allMoves[i];
 					if (isBeingChecked(WHITE))
 					{
-						m_WhitePositions[15 - whiteQueens.size() + index] = currentPos;
+						whitePos[15 - whiteQueens.size() + index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_WhitePositions[15 - whiteQueens.size() + index] = currentPos;
+					whitePos[15 - whiteQueens.size() + index] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackQueen:
-				currentPosOfPiece = m_BlackPositions[15 - blackQueens.size() + index];
-				m_BlackPositions[15 - blackQueens.size() + index] = sf::Vector2f(1000, 1000);
+				currentPosOfPiece = blackPos[15 - blackQueens.size() + index];
+				blackPos[15 - blackQueens.size() + index] = sf::Vector2f(1000, 1000);
 				whereIsPiece = whatPieceIsChecking(WHITE);
-				m_BlackPositions[15 - blackQueens.size() + index] = currentPosOfPiece;
-				if (!(whereIsPiece != -1 && m_WhitePositions[whereIsPiece] == allMoves[i]))
+				blackPos[15 - blackQueens.size() + index] = currentPosOfPiece;
+				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = m_BlackPositions[15 - blackQueens.size() + index];
-					m_BlackPositions[15 - blackQueens.size() + index] = allMoves[i];
+					currentPos = blackPos[15 - blackQueens.size() + index];
+					blackPos[15 - blackQueens.size() + index] = allMoves[i];
 					if (isBeingChecked(BLACK))
 					{
-						m_BlackPositions[15 - blackQueens.size() + index] = currentPos;
+						blackPos[15 - blackQueens.size() + index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					m_BlackPositions[15 - blackQueens.size() + index] = currentPos;
+					blackPos[15 - blackQueens.size() + index] = currentPos;
 				}
 				break;
 			default:

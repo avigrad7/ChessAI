@@ -23,16 +23,29 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
+	/*
+	* Castles for a specific castle
+	*
+	* @param whatCastle: The type of castle and color of castle that you want to preform
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	*
+	* @return None
+	*/
+	void castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
+
 	void deletePiece(TypeOfPiece piece, int index);
 	/*
 	* Generates the possible moves of a specific piece
 	*
 	* @param index: The index of the piece in its array
 	* @param pieceType: The type of piece it is
-	*
+	* @param whitePos: A vector of the white positions
+	* @param blackPos: A Vector of the black positions
+	* 
 	* @return A vector of all the possible moves
 	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType);
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
 	/*
 	* Returns the enPisant index
 	* 
@@ -67,10 +80,12 @@ public:
 	* Generates a vector of moves and what piece could move there
 	* 
 	* @param color: The color of the pieces that you want to generate the moves of
+	* @param whitePos: a vector of white positions
+	* @param blackPos: a vector of black positions
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
 	/*
 	* Gets if it is white's turn
 	* 
@@ -123,6 +138,15 @@ public:
 	bool isGameEnd();
 	void setAI() { isAI = true; }
 private:
+	/*
+	* Generates the possible moves of a specific piece
+	*
+	* @param index: The index of the piece in its array
+	* @param pieceType: The type of piece it is
+	*
+	* @return A vector of all the possible moves
+	*/
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType);
 	/*
 	* Moves a piece to a new place on the board
 	*
@@ -221,14 +245,7 @@ private:
 	*/
 	void drawValidMoves(const std::vector<sf::Vector2f>& allMoves);
 #endif
-	/*
-	* Checks if a castle is possible and then castles if it is
-	*
-	* @param whatCastle: The type of castle and color of castle that you want to preform
-	*
-	* @return None
-	*/
-	void castle(const CastlingOptions& whatCastle);
+	
 	/*
 	* Determines if a given castle is valid
 	*

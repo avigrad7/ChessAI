@@ -24,5 +24,7 @@ private:
 	
 private:
 	Game game;
+	std::vector<sf::Vector2f> m_WhitePositions;
+	std::vector<sf::Vector2f> m_BlackPositions;
 };
 
