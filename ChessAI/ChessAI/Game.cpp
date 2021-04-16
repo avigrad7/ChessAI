@@ -320,10 +320,12 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 		m_BlackPositions[index] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
+		EnPisant(WHITE, moveTo, m_WhitePositions, m_BlackPositions);
 		whitePawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 		m_WhitePositions[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackPawn:
+		EnPisant(BLACK, moveTo, m_WhitePositions, m_BlackPositions);
 		blackPawns[index - 6].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 		m_BlackPositions[index] = moveTo;
 		break;
@@ -357,7 +359,7 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	}
 }
 
-void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos) 
+void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos) 
 {
 	switch (whatCastle)
 	{
@@ -393,6 +395,32 @@ void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> w
 		blackPos[1] = sf::Vector2f(6, 1);
 		blackPos[15] = sf::Vector2f(7, 1);
 		break;
+	}
+}
+
+void Game::EnPisant(Color color, sf::Vector2f moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+{
+	if (color == WHITE)
+	{
+		for (int i = 6; i < 6 + (int)blackPawns.size(); i++)
+		{
+			if (blackPos[i].x == moveTo.x && blackPos[i].y == moveTo.y + 1)
+			{
+				blackPawns[i - 6].deletePiece(blackPos, i);
+				i = 13;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 6; i < 6 + (int)whitePawns.size(); i++)
+		{
+			if (whitePos[i].x == moveTo.x && whitePos[i].y == moveTo.y - 1)
+			{
+				whitePawns[i - 6].deletePiece(whitePos, i);
+				i = 13;
+			}
+		}
 	}
 }
 
@@ -679,11 +707,11 @@ void Game::onClickEvent()
 				case TypeOfPiece::WhiteKing:
 					if (copyOfPieceX == 3 && !whiteKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::bigWhite);
+						castle(CastlingOptions::bigWhite, m_WhitePositions, m_BlackPositions);
 					}
 					else if (copyOfPieceX == 7 && !whiteKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::smallWhite);
+						castle(CastlingOptions::smallWhite, m_WhitePositions, m_BlackPositions);
 					}
 					else
 					{
@@ -696,11 +724,11 @@ void Game::onClickEvent()
 				case TypeOfPiece::BlackKing:
 					if (copyOfPieceX == 3 && !blackKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::bigBlack);
+						castle(CastlingOptions::bigBlack, m_WhitePositions, m_BlackPositions);
 					}
 					else if (copyOfPieceX == 7 && !blackKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::smallBlack);
+						castle(CastlingOptions::smallBlack, m_WhitePositions, m_BlackPositions);
 					}
 					else
 					{
@@ -785,7 +813,7 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 	return allMoves;
 }
 
-std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
+std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
 	std::vector<PieceAndMoves> allMoves;
 	if (color == WHITE)
@@ -950,7 +978,7 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	return genPieceMoves(index, pieceType, m_WhitePositions, m_BlackPositions);
 }
 
-std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
+std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
 	std::vector<sf::Vector2f> allMoves;
 	bool check = false;

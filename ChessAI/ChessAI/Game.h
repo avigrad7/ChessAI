@@ -24,6 +24,17 @@ public:
 	};
 public:
 	/*
+	* Checks if a move is an en pisant and if so takes the piece
+	* 
+	* @param color: The color of the piece you are taking with
+	* @param moveTo: Where the piece is moving to
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* 
+	* @return None
+	*/
+	void EnPisant(Color color, sf::Vector2f moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	/*
 	* Castles for a specific castle
 	*
 	* @param whatCastle: The type of castle and color of castle that you want to preform
@@ -32,8 +43,15 @@ public:
 	*
 	* @return None
 	*/
-	void castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
-
+	void castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	/*
+	* Deletes a specified piece
+	* 
+	* @param piece:
+	* @param index:
+	* 
+	* @retun None
+	*/
 	void deletePiece(TypeOfPiece piece, int index);
 	/*
 	* Generates the possible moves of a specific piece
@@ -45,7 +63,7 @@ public:
 	* 
 	* @return A vector of all the possible moves
 	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Returns the enPisant index
 	* 
@@ -57,7 +75,7 @@ public:
 	* 
 	* @param index: the index of the piece that could be enpisanted
 	* 
-	* @return none
+	* @return None
 	*/
 	void setEnPisantIndex(int index) { enPisantIndex = index; }
 	/*
@@ -85,7 +103,7 @@ public:
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Gets if it is white's turn
 	* 
