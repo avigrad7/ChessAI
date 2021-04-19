@@ -24,6 +24,17 @@ public:
 	};
 public:
 	/*
+	* Determines if a given castle is valid
+	*
+	* @param whatCastle: The type of castle you are checking
+	*
+	* @return True if it is a valid castle. Fasle otherwise
+	*/
+	bool isValidCastle(const CastlingOptions& whatCastle);
+
+	void promote(Color color, sf::Vector2f moveTo,int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void fakePromote(Color color, int howManyPawns, sf::Vector2f moveTo, int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	/*
 	* Checks if a move is an en pisant and if so takes the piece
 	* 
 	* @param color: The color of the piece you are taking with
@@ -98,12 +109,14 @@ public:
 	* Generates a vector of moves and what piece could move there
 	* 
 	* @param color: The color of the pieces that you want to generate the moves of
+	* @param howManyPawns: The number of pawns of a set color that have yet to be promoted
 	* @param whitePos: a vector of white positions
 	* @param blackPos: a vector of black positions
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+
 	/*
 	* Gets if it is white's turn
 	* 
@@ -120,6 +133,17 @@ public:
 	* @return None
 	*/
 	void movePieceAndSetPosition(Color color, int index, const sf::Vector2f& moveTo);
+	/*
+	* Simulates moving a piece to a new place on the board and sets it's position
+	*
+	* @param color: the color of piece you are moving
+	* @param howManyPawns: The amount of pawns of the given color
+	* @param index: the index where the piece is in positions array
+	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
+	*
+	* @return None
+	*/
+	void simulateMovingAPiece(Color color, int howManyPawns,int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Gets the window
 	*
@@ -155,6 +179,14 @@ public:
 
 	bool isGameEnd();
 	void setAI() { isAI = true; }
+	/*
+	* Checks if a king is in check
+	*
+	* @param color: The color king you are checking
+	*
+	* @return True if it is being checked and false otherwise
+	*/
+	bool isBeingChecked(const Color& color);
 private:
 	/*
 	* Generates the possible moves of a specific piece
@@ -264,22 +296,7 @@ private:
 	void drawValidMoves(const std::vector<sf::Vector2f>& allMoves);
 #endif
 	
-	/*
-	* Determines if a given castle is valid
-	*
-	* @param whatCastle: The type of castle you are checking
-	*
-	* @return True if it is a valid castle. Fasle otherwise
-	*/
-	bool isValidCastle(const CastlingOptions& whatCastle);
-	/*
-	* Checks if a king is in check
-	*
-	* @param color: The color king you are checking
-	*
-	* @return True if it is being checked and false otherwise
-	*/
-	bool isBeingChecked(const Color& color);
+	
 	/*
 	* Checks if a specific piece is in the way of a check
 	*
