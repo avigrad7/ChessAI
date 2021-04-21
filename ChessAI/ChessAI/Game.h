@@ -23,6 +23,8 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
+	int getSizeWhitePawns() { return whitePawns.size(); }
+	int getSizeBlackPawns() { return blackPawns.size(); }
 	/*
 	* Determines if a given castle is valid
 	*
@@ -30,10 +32,9 @@ public:
 	*
 	* @return True if it is a valid castle. Fasle otherwise
 	*/
-	bool isValidCastle(const CastlingOptions& whatCastle);
+	bool isValidCastle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 
-	void promote(Color color, sf::Vector2f moveTo,int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
-	void fakePromote(Color color, int howManyPawns, sf::Vector2f moveTo, int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void promote(Color color, int howManyPawns, sf::Vector2f moveTo, int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Checks if a move is an en pisant and if so takes the piece
 	* 

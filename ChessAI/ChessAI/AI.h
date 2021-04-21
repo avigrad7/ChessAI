@@ -21,7 +21,7 @@ public:
 	void startGame();
 private:
 	BestMoveAndPiece genBestMove();
-	
+	void resetValues();
 private:
 	Game game;
 	std::vector<sf::Vector2f> m_WhitePositions;
