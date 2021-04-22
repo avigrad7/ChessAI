@@ -7,6 +7,11 @@ AI::AI()
 	sizeOfBlackPawns = 8;
 	m_WhitePositions = game.getWhitePositions();
 	m_BlackPositions = game.getBlackPositions();
+	for (int i = 0; i < 2; i++)
+	{
+		hasWhiteRooksMoved[i] = false;
+		hasBlackRooksMoved[i] = false;
+	}
 	game.setAI();
 }
 
@@ -23,11 +28,11 @@ void AI::startGame()
 			{
 				if (game.isValidCastle(CastlingOptions::bigBlack, m_WhitePositions, m_BlackPositions) && bestMove.bestMove.x == 3)
 				{
-					game.castle(CastlingOptions::bigBlack, m_WhitePositions, m_BlackPositions);
+					game.castle(CastlingOptions::bigBlack);
 				}
 				else if (game.isValidCastle(CastlingOptions::smallBlack, m_WhitePositions, m_BlackPositions) && bestMove.bestMove.x == 7)
 				{
-					game.castle(CastlingOptions::smallBlack, m_WhitePositions, m_BlackPositions);
+					game.castle(CastlingOptions::smallBlack);
 				}
 			}
 			game.movePieceAndSetPosition(BLACK, bestMove.whatPiece, bestMove.bestMove);

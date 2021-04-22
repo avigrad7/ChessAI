@@ -28,5 +28,9 @@ private:
 	std::vector<sf::Vector2f> m_BlackPositions;
 	int sizeOfWhitePawns;
 	int sizeOfBlackPawns;
+	bool hasWhiteRooksMoved[2];
+	bool hasBlackRooksMoved[2];
+	bool hasWhiteKingMoved;
+	bool hasBlackKingMoved;
 };
 

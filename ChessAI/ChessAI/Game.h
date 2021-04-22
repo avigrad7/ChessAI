@@ -23,6 +23,7 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
+
 	int getSizeWhitePawns() { return whitePawns.size(); }
 	int getSizeBlackPawns() { return blackPawns.size(); }
 	/*
@@ -55,7 +56,7 @@ public:
 	*
 	* @return None
 	*/
-	void castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void castle(const CastlingOptions& whatCastle);
 	/*
 	* Deletes a specified piece
 	* 
@@ -144,7 +145,7 @@ public:
 	*
 	* @return None
 	*/
-	void simulateMovingAPiece(Color color, int howManyPawns,int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Gets the window
 	*

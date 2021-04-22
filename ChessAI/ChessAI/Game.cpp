@@ -389,57 +389,84 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	}
 }
 
-void Game::simulateMovingAPiece(Color color, int howManyPawns,int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
 	TypeOfPiece pieceType = getPieceType(index, color);
 	switch (pieceType)
 	{
 	case TypeOfPiece::WhiteRook:
-		whiteRooks[index].moved();
-		m_WhitePositions[index] = moveTo;
+		whiteRookHasMoved[index] = true;
+		whitePos[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackRook:
-		blackRooks[index].moved();
-		m_BlackPositions[index] = moveTo;
+		blackRookHasMoved[index] =  true;
+		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteBishop:
-		m_WhitePositions[index] = moveTo;
+		whitePos[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackBishop:
-		m_BlackPositions[index] = moveTo;
+		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKnight:
-		m_WhitePositions[index] = moveTo;
+		whitePos[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackKnight:
-		m_BlackPositions[index] = moveTo;
+		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
-		EnPisant(WHITE, moveTo, m_WhitePositions, m_BlackPositions);
-		m_WhitePositions[index] = moveTo;
+		for (int i = 6; i < 6 + howManyBlackPawns; i++)
+		{
+			if (blackPos[i].x == moveTo.x && blackPos[i].y == moveTo.y + 1)
+			{
+				blackPos[i] = sf::Vector2f(-1000, -1000);
+				i = 13;
+			}
+		}
+		whitePos[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackPawn:
-		EnPisant(BLACK, moveTo, m_WhitePositions, m_BlackPositions);
-		m_BlackPositions[index] = moveTo;
+		for (int i = 6; i < 6 + howManyWhitePawns; i++)
+		{
+			if (whitePos[i].x == moveTo.x && whitePos[i].y == moveTo.y - 1)
+			{
+				whitePos[i] = sf::Vector2f(-1000, -1000);
+				i = 13;
+			}
+		}		
+		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteQueen:
-		m_WhitePositions[index] = moveTo;
+		whitePos[index] = moveTo;
 		break;
 	case TypeOfPiece::BlackQueen:
-		m_BlackPositions[index] = moveTo;
+		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKing:
-		whiteKing->moved();
-		m_WhitePositions[15] = moveTo;
+		if (whitePos[index].x == 5 && moveTo.x == 3 && !whiteKingHasMoved && !whiteRookHasMoved[0])
+		{
+			whitePos[0] = sf::Vector2f(4, 8);
+			blackPos[15] = sf::Vector2f(3, 8);
+		}
+		else if(whitePos[index].x == 5 && moveTo.x == 7 && !whiteKingHasMoved && !whiteRookHasMoved[1])
+		{ 
+			whitePos[1] = sf::Vector2f(6, 8);
+			blackPos[15] = sf::Vector2f(7, 8);
+		}
+		else
+		{
+			whitePos[15] = moveTo;
+		}
+		whiteKingHasMoved = true;
 		break;
 	case TypeOfPiece::BlackKing:
-		blackKing->moved();
-		m_BlackPositions[15] = moveTo;
+		blackKingHasMoved = true;
+		blackPos[15] = moveTo;
 		break;
 	}
 }
 
-void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos) 
+void Game::castle(const CastlingOptions& whatCastle) 
 {
 	switch (whatCastle)
 	{
@@ -448,32 +475,32 @@ void Game::castle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& 
 		whiteRooks[0].moved();
 		movePiece(whiteKing->getPiece(), sf::Vector2f(3, 8));
 		whiteKing->moved();
-		whitePos[0] = sf::Vector2f(4, 8);
-		whitePos[15] = sf::Vector2f(3, 8);
+		m_WhitePositions[0] = sf::Vector2f(4, 8);
+		m_WhitePositions[15] = sf::Vector2f(3, 8);
 		break;
 	case CastlingOptions::smallWhite:
 		movePiece(whiteRooks[1].getPiece(), sf::Vector2f(6, 8));
 		whiteRooks[1].moved();
 		movePiece(whiteKing->getPiece(), sf::Vector2f(7, 8));
 		whiteKing->moved();
-		whitePos[1] = sf::Vector2f(6, 8);
-		whitePos[15] = sf::Vector2f(7, 8);
+		m_WhitePositions[1] = sf::Vector2f(6, 8);
+		m_WhitePositions[15] = sf::Vector2f(7, 8);
 		break;
 	case CastlingOptions::bigBlack:
 		movePiece(blackRooks[0].getPiece(), sf::Vector2f(4, 1));
 		blackRooks[0].moved();
 		movePiece(blackKing->getPiece(), sf::Vector2f(3, 1));
 		blackKing->moved();
-		blackPos[0] = sf::Vector2f(4, 1);
-		blackPos[15] = sf::Vector2f(3, 1);
+		m_BlackPositions[0] = sf::Vector2f(4, 1);
+		m_BlackPositions[15] = sf::Vector2f(3, 1);
 		break;
 	case CastlingOptions::smallBlack:
 		movePiece(blackRooks[1].getPiece(), sf::Vector2f(6, 1));
 		blackRooks[1].moved();
 		movePiece(blackKing->getPiece(), sf::Vector2f(7, 1));
 		blackKing->moved();
-		blackPos[1] = sf::Vector2f(6, 1);
-		blackPos[15] = sf::Vector2f(7, 1);
+		m_BlackPositions[1] = sf::Vector2f(6, 1);
+		m_BlackPositions[15] = sf::Vector2f(7, 1);
 		break;
 	}
 }
@@ -815,11 +842,11 @@ void Game::onClickEvent()
 				case TypeOfPiece::WhiteKing:
 					if (copyOfPieceX == 3 && !whiteKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::bigWhite, m_WhitePositions, m_BlackPositions);
+						castle(CastlingOptions::bigWhite);
 					}
 					else if (copyOfPieceX == 7 && !whiteKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::smallWhite, m_WhitePositions, m_BlackPositions);
+						castle(CastlingOptions::smallWhite);
 					}
 					else
 					{
@@ -832,11 +859,11 @@ void Game::onClickEvent()
 				case TypeOfPiece::BlackKing:
 					if (copyOfPieceX == 3 && !blackKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::bigBlack, m_WhitePositions, m_BlackPositions);
+						castle(CastlingOptions::bigBlack);
 					}
 					else if (copyOfPieceX == 7 && !blackKing->hasBeenMoved())
 					{
-						castle(CastlingOptions::smallBlack, m_WhitePositions, m_BlackPositions);
+						castle(CastlingOptions::smallBlack);
 					}
 					else
 					{
@@ -928,29 +955,32 @@ std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, int
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!whiteRooks[i].isDeleted())
+			if (!whiteRooks[i].isDeleted() && whitePos[i].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::WhiteRook)));
 			}
-			if (!whiteKnights[i].isDeleted())
+			if (!whiteKnights[i].isDeleted() && whitePos[i + 2].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::WhiteKnight)));
 			}
-			if (!whiteBishops[i].isDeleted())
+			if (!whiteBishops[i].isDeleted() && whitePos[i + 4].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::WhiteBishop)));
 			}
 		}
 		for (int i = 0; i < howManyPawns; i++)
 		{
-			if (!whitePawns[i].isDeleted())
+			if (!whitePawns[i].isDeleted() && whitePos[i + 6].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::WhitePawn)));
 			}
 		}
 		for (int i = 0; i < 9 - howManyPawns; i++)
 		{
-			allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::WhiteQueen)));
+			if (!whiteQueens[i].isDeleted() && whitePos[i + 6 + howManyPawns].x != -1000)
+			{
+				allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::WhiteQueen)));
+			}
 		}
 		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::WhiteKing)));
 	}
@@ -958,29 +988,32 @@ std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, int
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!blackRooks[i].isDeleted())
+			if (!blackRooks[i].isDeleted() && blackPos[i].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::BlackRook)));
 			}
-			if (!blackKnights[i].isDeleted())
+			if (!blackKnights[i].isDeleted() && blackPos[i + 2].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::BlackKnight)));
 			}
-			if (!blackBishops[i].isDeleted())
+			if (!blackBishops[i].isDeleted() && blackPos[i + 4].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::BlackBishop)));
 			}
 		}
 		for (int i = 0; i < howManyPawns; i++)
 		{
-			if (!blackPawns[i].isDeleted())
+			if (!blackPawns[i].isDeleted() && blackPos[i + 6].x != -1000)
 			{
 				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::BlackPawn)));
 			}
 		}
 		for (int i = 0; i < 9 - howManyPawns; i++)
 		{
-			allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::BlackQueen)));
+			if (!blackQueens[i].isDeleted() && blackPos[i + 6 + howManyPawns].x != -1000)
+			{
+				allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::BlackQueen)));
+			}
 		}
 		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::BlackKing)));
 	}
