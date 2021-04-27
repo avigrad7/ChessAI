@@ -34,8 +34,6 @@ public:
 	* @return True if it is a valid castle. Fasle otherwise
 	*/
 	bool isValidCastle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
-
-	void promote(Color color, int howManyPawns, sf::Vector2f moveTo, int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Checks if a move is an en pisant and if so takes the piece
 	* 
@@ -145,7 +143,7 @@ public:
 	*
 	* @return None
 	*/
-	void simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Gets the window
 	*

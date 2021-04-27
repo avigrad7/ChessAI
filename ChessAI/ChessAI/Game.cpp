@@ -389,7 +389,7 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	}
 }
 
-void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
 	TypeOfPiece pieceType = getPieceType(index, color);
 	switch (pieceType)
@@ -415,7 +415,7 @@ void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyB
 		blackPos[index] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
-		for (int i = 6; i < 6 + howManyBlackPawns; i++)
+		for (int i = 6; i < 6 + howManyBlackPawns; i++) //En Pisant
 		{
 			if (blackPos[i].x == moveTo.x && blackPos[i].y == moveTo.y + 1)
 			{
@@ -423,7 +423,19 @@ void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyB
 				i = 13;
 			}
 		}
-		whitePos[index] = moveTo;
+		if (moveTo.y == 1) //Promotion
+		{
+			for (int i = index; i < 15; i++)
+			{
+				whitePos[i] = whitePos[i + 1];
+			}
+			howManyWhitePawns--;
+			whitePos[14] = moveTo;
+		}
+		else
+		{
+			whitePos[index] = moveTo;
+		}
 		break;
 	case TypeOfPiece::BlackPawn:
 		for (int i = 6; i < 6 + howManyWhitePawns; i++)
@@ -433,8 +445,20 @@ void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyB
 				whitePos[i] = sf::Vector2f(-1000, -1000);
 				i = 13;
 			}
-		}		
-		blackPos[index] = moveTo;
+		}	
+		if (moveTo.y == 8)
+		{
+			for (int i = index; i < 15; i++)
+			{
+				blackPos[i] = blackPos[i + 1];
+			}
+			howManyBlackPawns--;
+			blackPos[14] = moveTo;
+		}
+		else
+		{
+			blackPos[index] = moveTo;
+		}
 		break;
 	case TypeOfPiece::WhiteQueen:
 		whitePos[index] = moveTo;
@@ -446,22 +470,25 @@ void Game::simulateMovingAPiece(Color color, int howManyWhitePawns, int howManyB
 		if (whitePos[index].x == 5 && moveTo.x == 3 && !whiteKingHasMoved && !whiteRookHasMoved[0])
 		{
 			whitePos[0] = sf::Vector2f(4, 8);
-			blackPos[15] = sf::Vector2f(3, 8);
 		}
 		else if(whitePos[index].x == 5 && moveTo.x == 7 && !whiteKingHasMoved && !whiteRookHasMoved[1])
 		{ 
 			whitePos[1] = sf::Vector2f(6, 8);
-			blackPos[15] = sf::Vector2f(7, 8);
 		}
-		else
-		{
-			whitePos[15] = moveTo;
-		}
+		whitePos[15] = moveTo;
 		whiteKingHasMoved = true;
 		break;
 	case TypeOfPiece::BlackKing:
-		blackKingHasMoved = true;
+		if (blackPos[index].x == 5 && moveTo.x == 3 && !blackKingHasMoved && !blackRookHasMoved[0])
+		{
+			blackPos[0] = sf::Vector2f(4, 8);
+		}
+		else if (blackPos[index].x == 5 && moveTo.x == 7 && !blackKingHasMoved && !blackRookHasMoved[1])
+		{
+			blackPos[1] = sf::Vector2f(6, 8);
+		}
 		blackPos[15] = moveTo;
+		blackKingHasMoved = true;
 		break;
 	}
 }
@@ -527,34 +554,6 @@ void Game::EnPisant(Color color, sf::Vector2f moveTo, std::vector<sf::Vector2f>&
 				whitePawns[i - 6].deletePiece(whitePos, i);
 				i = 13;
 			}
-		}
-	}
-}
-
-void Game::promote(Color color, int howManyPawns, sf::Vector2f moveTo, int indexInPositions, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
-{
-	if (color == WHITE)
-	{
-		if (moveTo.y == 1)
-		{
-			removePiece(BLACK, whitePos[indexInPositions]);
-			for (int i = indexInPositions; i < 7 + howManyPawns; i++)
-			{
-				whitePos[i] = whitePos[i + 1];
-			}
-			whitePos[14] = moveTo;
-		}
-	}
-	else
-	{
-		if (moveTo.y == 8)
-		{
-			removePiece(WHITE, blackPos[indexInPositions]);
-			for (int i = indexInPositions; i < 7 + howManyPawns; i++)
-			{
-				blackPos[i] = blackPos[i + 1];
-			}
-			blackPos[14] = moveTo;
 		}
 	}
 }
@@ -792,7 +791,7 @@ void Game::onClickEvent()
 					{
 						removePiece(BLACK, sf::Vector2f(m_WhitePositions[indexInPositions].x, m_WhitePositions[indexInPositions].y));
 						whitePawns[index].deletePiece(m_WhitePositions, indexInPositions);
-						for (int i = indexInPositions; i < 16 - (int)whiteQueens.size(); i++)
+						for (int i = indexInPositions; i < 15; i++)
 						{
 							m_WhitePositions[i] = m_WhitePositions[i + 1];
 						}
