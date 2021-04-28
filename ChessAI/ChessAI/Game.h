@@ -23,99 +23,30 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
-
+	/*
+	* Gets how many white pawns
+	* 
+	* @return How many white pawns have not been promoted
+	*/
 	int getSizeWhitePawns() { return whitePawns.size(); }
+	/*
+	* Gets how many black pawns
+	*
+	* @return How many black pawns have not been promoted
+	*/
 	int getSizeBlackPawns() { return blackPawns.size(); }
-	/*
-	* Determines if a given castle is valid
-	*
-	* @param whatCastle: The type of castle you are checking
-	*
-	* @return True if it is a valid castle. Fasle otherwise
-	*/
-	bool isValidCastle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
-	/*
-	* Checks if a move is an en pisant and if so takes the piece
-	* 
-	* @param color: The color of the piece you are taking with
-	* @param moveTo: Where the piece is moving to
-	* @param whitePos: A vector of white positions
-	* @param blackPos: A vector of black positions
-	* 
-	* @return None
-	*/
-	void EnPisant(Color color, sf::Vector2f moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
-	/*
-	* Castles for a specific castle
-	*
-	* @param whatCastle: The type of castle and color of castle that you want to preform
-	* @param whitePos: A vector of white positions
-	* @param blackPos: A vector of black positions
-	*
-	* @return None
-	*/
-	void castle(const CastlingOptions& whatCastle);
-	/*
-	* Deletes a specified piece
-	* 
-	* @param piece:
-	* @param index:
-	* 
-	* @retun None
-	*/
-	void deletePiece(TypeOfPiece piece, int index);
-	/*
-	* Generates the possible moves of a specific piece
-	*
-	* @param index: The index of the piece in its array
-	* @param pieceType: The type of piece it is
-	* @param whitePos: A vector of the white positions
-	* @param blackPos: A Vector of the black positions
-	* 
-	* @return A vector of all the possible moves
-	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
-	/*
-	* Returns the enPisant index
-	* 
-	* @retun the positions of the piece that could be enpisnted
-	*/
-	int getEnPisantIndex() { return enPisantIndex; }
-	/*
-	* sets the en pisant index
-	* 
-	* @param index: the index of the piece that could be enpisanted
-	* 
-	* @return None
-	*/
-	void setEnPisantIndex(int index) { enPisantIndex = index; }
-	/*
-	* gets the size of the pawn vector
-	* 
-	* @param color: the color of the pawns that you are looking for
-	* 
-	* @return the size of a pawn vector
-	*/
-	int getPawnSize(Color color);
-	/*
-	* gets the size of the queen vector
-	*
-	* @param color: the color of the queens that you are looking for
-	*
-	* @return the size of a queen vector
-	*/
-	int getQueenSize(Color color);
 	/*
 	* Generates a vector of moves and what piece could move there
 	* 
 	* @param color: The color of the pieces that you want to generate the moves of
-	* @param howManyPawns: The number of pawns of a set color that have yet to be promoted
+	* @param howManyWhitePawns: How many white pawns that have not been promoted
+	* @param howManyBlackPawns: How many black pawns that have not been promoted
 	* @param whitePos: a vector of white positions
 	* @param blackPos: a vector of black positions
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 
 	/*
 	* Gets if it is white's turn
@@ -137,9 +68,16 @@ public:
 	* Simulates moving a piece to a new place on the board and sets it's position
 	*
 	* @param color: the color of piece you are moving
-	* @param howManyPawns: The amount of pawns of the given color
+	* @param howManyWhitePawns: The amount of white pawns
+	* @param howManyBlackPawns: The amount of black pawns
+	* @param whiteRookHasMooved: An array of bools of weather or not the white rooks have moved
+	* @param blackRookHasMooved: An array of bools of weather or not the black rooks have moved
+	* @param whiteKingHasMoved: a bool of weather or not the white king has moved
+	* @param blackKingHasMoved: a bool of weather or not the black king has moved
 	* @param index: the index where the piece is in positions array
 	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
 	*
 	* @return None
 	*/
@@ -157,14 +95,6 @@ public:
 	*/
 	void startGame();
 	/*
-	* Generates all possible moves
-	*
-	* @param color: The color of the pices you want to generate the moves of
-	*
-	* @return An array of all possible moves
-	*/
-	std::vector<sf::Vector2f> genAllMoves(const Color& color);
-	/*
 	* Gets the white positions
 	* 
 	* @retun The vector for the white positions
@@ -176,27 +106,77 @@ public:
 	* @retun The vector for the black positions
 	*/
 	std::vector<sf::Vector2f> getBlackPositions() { return m_BlackPositions; }
-
+	/*
+	* Returns if the game is over or not
+	* 
+	* @return True if the game has ended; false otherwise
+	*/
 	bool isGameEnd();
+	/*
+	* Tells the game that it is an AI playing
+	* 
+	* @retun None
+	*/
 	void setAI() { isAI = true; }
+private:
 	/*
 	* Checks if a king is in check
 	*
 	* @param color: The color king you are checking
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* @param howManyWhitePawns: How many white pawns have not been promoted
+	* @param howManyBlackPawns: How many black pawns have not been promoted
 	*
 	* @return True if it is being checked and false otherwise
 	*/
-	bool isBeingChecked(const Color& color);
-private:
+	bool isBeingChecked(const Color& color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
+	/*
+	* Generates all possible moves
+	*
+	* @param color: The color of the pices you want to generate the moves of
+	*
+	* @return An array of all possible moves
+	*/
+	std::vector<sf::Vector2f> genAllMoves(const Color& color);
 	/*
 	* Generates the possible moves of a specific piece
 	*
 	* @param index: The index of the piece in its array
 	* @param pieceType: The type of piece it is
-	*
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* @param howManyWhitePawns: How many white pawns have not been promoted
+	* @param howManyBlackPawns: How many black pawns have not been promoted
+	* 
 	* @return A vector of all the possible moves
 	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType);
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
+	/*
+	* Castles for a specific castle
+	*
+	* @param whatCastle: The type of castle and color of castle that you want to preform
+	*
+	* @return None
+	*/
+	void castle(const CastlingOptions& whatCastle);
+	/*
+	* Checks if a move is an en pisant and if so takes the piece
+	*
+	* @param color: The color of the piece you are taking with
+	* @param moveTo: Where the piece is moving to
+	*
+	* @return None
+	*/
+	void EnPisant(Color color, sf::Vector2f moveTo);
+	/*
+	* Determines if a given castle is valid
+	*
+	* @param whatCastle: The type of castle you are checking
+	*
+	* @return True if it is a valid castle. Fasle otherwise
+	*/
+	bool isValidCastle(const CastlingOptions& whatCastle);
 	/*
 	* Moves a piece to a new place on the board
 	*
@@ -214,6 +194,8 @@ private:
 	void setPieces();
 	/*
 	* Deals with all the events (Clicked, Closed window)
+	* 
+	* @param event: The event
 	*
 	* @return None
 	*/
@@ -302,26 +284,38 @@ private:
 	*
 	* @param pieceType: The type of piece that you want to check
 	* @param index: The index of that piece
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* @param howManyWhitePawns: How many white pawns have not been promoted
+	* @param howManyBlackPawns: How many black pawns have not been promoted
 	*
 	* @return True if it is in the way of a check and fasle otherwise
 	*/
-	bool isInWayOfCheck(const TypeOfPiece& pieceType, const int& index);
+	bool isInWayOfCheck(const TypeOfPiece& pieceType, const int& index, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
 	/*
 	* Generates all the moves of a specific color without special moves
 	*
-	* @parm color: The color of the pieces you want to generate the moves for
+	* @param color: The color of the pieces you want to generate the moves for
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* @param howManyWhitePawns: How many white pawns have not been promoted
+	* @param howManyBlackPawns: How many black pawns have not been promoted
 	*
 	* @return All the possible moves
 	*/
-	std::vector<sf::Vector2f> genAllBaseLevelMoves(const Color& color);
+	std::vector<sf::Vector2f> genAllBaseLevelMoves(const Color& color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
 	/*
 	* Figures out what piece is giving check
 	*
 	* @param color: the color of the piece that is giving check
+	* @param whitePos: A vector of the white positions
+	* @param blackPos: A vector of the black positions
+	* @param howManyWhitePawns: How many white pawns that have not been promoted
+	* @param howManyBlackPawns: How many black pawns that have not been promoted
 	*
 	* @return the index in positions where that piece could be found or -1 if there are two checks or if it is not in check
 	*/
-	int whatPieceIsChecking(const Color& color);
+	int whatPieceIsChecking(const Color& color, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
 	/*
 	* Determines if the game is over and if so prints the results
 	*

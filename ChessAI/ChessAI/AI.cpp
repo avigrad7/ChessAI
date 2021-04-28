@@ -24,17 +24,6 @@ void AI::startGame()
 		if (!game.getIsWhitesTurn() && game.getWindow().isOpen())
 		{
 			BestMoveAndPiece bestMove = genBestMove();
-			if (bestMove.whatPiece == 15)
-			{
-				if (game.isValidCastle(CastlingOptions::bigBlack, m_WhitePositions, m_BlackPositions) && bestMove.bestMove.x == 3)
-				{
-					game.castle(CastlingOptions::bigBlack);
-				}
-				else if (game.isValidCastle(CastlingOptions::smallBlack, m_WhitePositions, m_BlackPositions) && bestMove.bestMove.x == 7)
-				{
-					game.castle(CastlingOptions::smallBlack);
-				}
-			}
 			game.movePieceAndSetPosition(BLACK, bestMove.whatPiece, bestMove.bestMove);
 		}
 	}
@@ -73,7 +62,7 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			}
 			else if (i == 4 || i == 5)
 			{
-				value += 3.1;
+				value += 3.1f;
 			}
 			else if (i > 5 && i < 6 + sizeOfWhitePawns)
 			{
@@ -96,7 +85,7 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			}
 			else if (i == 4 || i == 5)
 			{
-				value -= 3.1;
+				value -= 3.1f;
 			}
 			else if (i > 5 && i < 6 + sizeOfBlackPawns)
 			{
