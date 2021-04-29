@@ -923,40 +923,40 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 	{
 		if (color == WHITE)
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteRook));
-			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteKnight));
-			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteBishop));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteRook, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteKnight, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteBishop, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
 		else
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackRook));
-			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackKnight));
-			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackBishop));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackRook, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackKnight, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackBishop, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
 	}
 	if (color == WHITE)
 	{
 		for (int i = 0; i < (int)whitePawns.size(); i++)
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::WhitePawn));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhitePawn, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
 		for (int i = 0; i < (int)whiteQueens.size(); i++)
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteQueen));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::WhiteQueen, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
-		temp.push_back(genPieceMoves(0, TypeOfPiece::WhiteKing));
+		temp.push_back(genPieceMoves(0, TypeOfPiece::WhiteKing, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 	}
 	else
 	{
 		for (int i = 0; i < (int)blackPawns.size(); i++)
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackPawn));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackPawn, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
 		for (int i = 0; i < (int)blackQueens.size(); i++)
 		{
-			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackQueen));
+			temp.push_back(genPieceMoves(i, TypeOfPiece::BlackQueen, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 		}
-		temp.push_back(genPieceMoves(0, TypeOfPiece::BlackKing));
+		temp.push_back(genPieceMoves(0, TypeOfPiece::BlackKing, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()));
 	}
 
 	for (int i = 0; i < (int)temp.size(); i++)
@@ -969,74 +969,74 @@ std::vector<sf::Vector2f> Game::genAllMoves(const Color& color)
 	return allMoves;
 }
 
-std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, int howManyPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+std::vector<Game::PieceAndMoves> Game::genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
 	std::vector<PieceAndMoves> allMoves;
 	if (color == WHITE)
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!whiteRooks[i].isDeleted() && whitePos[i].x != -1000)
+			if (whitePos[i].x >= 1 && whitePos[i].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::WhiteRook)));
+				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::WhiteRook, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
-			if (!whiteKnights[i].isDeleted() && whitePos[i + 2].x != -1000)
+			if (whitePos[i + 2].x >= 1 && whitePos[i + 2].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::WhiteKnight)));
+				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::WhiteKnight, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
-			if (!whiteBishops[i].isDeleted() && whitePos[i + 4].x != -1000)
+			if (whitePos[i + 4].x >= 1 && whitePos[i + 4].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::WhiteBishop)));
+				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::WhiteBishop, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		for (int i = 0; i < howManyPawns; i++)
+		for (int i = 0; i < howManyWhitePawns; i++)
 		{
-			if (!whitePawns[i].isDeleted() && whitePos[i + 6].x != -1000)
+			if (whitePos[i + 6].x >= 1 && whitePos[i + 6].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::WhitePawn)));
+				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::WhitePawn, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		for (int i = 0; i < 9 - howManyPawns; i++)
+		for (int i = 0; i < 9 - howManyWhitePawns; i++)
 		{
-			if (!whiteQueens[i].isDeleted() && whitePos[i + 6 + howManyPawns].x != -1000)
+			if (whitePos[i + 6 + howManyWhitePawns].x >= 1 && whitePos[i + 6 + howManyWhitePawns].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::WhiteQueen)));
+				allMoves.push_back(PieceAndMoves(i + 6 + howManyWhitePawns, genPieceMoves(i, TypeOfPiece::WhiteQueen, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::WhiteKing)));
+		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::WhiteKing, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 	}
 	else
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!blackRooks[i].isDeleted() && blackPos[i].x != -1000)
+			if (blackPos[i].x >= 1 && blackPos[i].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::BlackRook)));
+				allMoves.push_back(PieceAndMoves(i, genPieceMoves(i, TypeOfPiece::BlackRook, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
-			if (!blackKnights[i].isDeleted() && blackPos[i + 2].x != -1000)
+			if (blackPos[i + 2].x >= 1 && blackPos[i + 2].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::BlackKnight)));
+				allMoves.push_back(PieceAndMoves(i + 2, genPieceMoves(i, TypeOfPiece::BlackKnight, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
-			if (!blackBishops[i].isDeleted() && blackPos[i + 4].x != -1000)
+			if (blackPos[i + 4].x >= 1 && blackPos[i + 4].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::BlackBishop)));
+				allMoves.push_back(PieceAndMoves(i + 4, genPieceMoves(i, TypeOfPiece::BlackBishop, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		for (int i = 0; i < howManyPawns; i++)
+		for (int i = 0; i < howManyBlackPawns; i++)
 		{
-			if (!blackPawns[i].isDeleted() && blackPos[i + 6].x != -1000)
+			if (blackPos[i + 6].x >= 1 && blackPos[i + 6].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::BlackPawn)));
+				allMoves.push_back(PieceAndMoves(i + 6, genPieceMoves(i, TypeOfPiece::BlackPawn, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		for (int i = 0; i < 9 - howManyPawns; i++)
+		for (int i = 0; i < 9 - howManyBlackPawns; i++)
 		{
-			if (!blackQueens[i].isDeleted() && blackPos[i + 6 + howManyPawns].x != -1000)
+			if (blackPos[i + 6 + howManyBlackPawns].x >= 1 && blackPos[i + 6 + howManyBlackPawns].x <= 8)
 			{
-				allMoves.push_back(PieceAndMoves(i + 6 + howManyPawns, genPieceMoves(i, TypeOfPiece::BlackQueen)));
+				allMoves.push_back(PieceAndMoves(i + 6 + howManyBlackPawns, genPieceMoves(i, TypeOfPiece::BlackQueen, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 			}
 		}
-		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::BlackKing)));
+		allMoves.push_back(PieceAndMoves(15, genPieceMoves(0, TypeOfPiece::BlackKing, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns)));
 	}
 	for (int i = 0; i < (int)allMoves.size(); i++)
 	{
@@ -1057,34 +1057,34 @@ std::vector<sf::Vector2f> Game::genAllBaseLevelMoves(const Color& color, std::ve
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!(whiteRooks[i].isDeleted() && whitePos[i].x > 8 && whitePos[i].x < 1))
+			if (!whiteRooks[i].isDeleted() && whitePos[i].x <= 8 && whitePos[i].x >= 1)
 			{
 				temp.push_back(whiteRooks[i].possibleMoves(whitePos, blackPos, i));
 			}
-			if (!(whiteKnights[i].isDeleted() && whitePos[i + 2].x > 8 && whitePos[i + 2].x < 1))
+			if (!whiteKnights[i].isDeleted() && whitePos[i + 2].x <= 8 && whitePos[i + 2].x >= 1)
 			{
 				temp.push_back(whiteKnights[i].possibleMoves(whitePos, blackPos, i + 2));
 			}
-			if (!(whiteBishops[i].isDeleted() && whitePos[i + 4].x > 8 && whitePos[i + 4].x < 1))
+			if (!whiteBishops[i].isDeleted() && whitePos[i + 4].x <= 8 && whitePos[i + 4].x >= 1))
 			{
 				temp.push_back(whiteBishops[i].possibleMoves(whitePos, blackPos, i + 4));
 			}
 		}
 		for (int i = 0; i < howManyWhitePawns; i++)
 		{
-			if (!(whitePawns[i].isDeleted() && whitePos[i + 6].x > 8 && whitePos[i + 6].x < 1))
+			if (!whitePawns[i].isDeleted() && whitePos[i + 6].x <= 8 && whitePos[i + 6].x >= 1)
 			{
 				temp.push_back(whitePawns[i].possibleMoves(whitePos, blackPos, i + 6));
 			}
 		}
 		for (int i = 0; i < 9 - howManyWhitePawns; i++)
 		{
-			if (!(whiteQueens[i].isDeleted() && whitePos[i + 6 + howManyWhitePawns].x > 8 && whitePos[i + 6 + howManyWhitePawns].x < 1))
+			if (!whiteQueens[i].isDeleted() && whitePos[i + 6 + howManyWhitePawns].x <= 8 && whitePos[i + 6 + howManyWhitePawns].x >= 1)
 			{
 				temp.push_back(whiteQueens[i].possibleMoves(whitePos, blackPos, i + 6 + howManyWhitePawns));
 			}
 		}
-		if (!(whiteKing->isDeleted() && whitePos[15].x > 8 && whitePos[15].x < 1))
+		if (!whiteKing->isDeleted() && whitePos[15].x <= 8 && whitePos[15].x >= 1)
 		{
 			temp.push_back(whiteKing->possibleMoves(whitePos, blackPos, 15));
 		}
@@ -1093,34 +1093,34 @@ std::vector<sf::Vector2f> Game::genAllBaseLevelMoves(const Color& color, std::ve
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			if (!(blackRooks[i].isDeleted() && blackPos[i].x > 8 && blackPos[i].x < 1))
+			if (blackPos[i].x <= 8 && blackPos[i].x >= 1)
 			{
 				temp.push_back(blackRooks[i].possibleMoves(whitePos, blackPos, i));
 			}
-			if (!(blackKnights[i].isDeleted() && blackPos[i + 2].x > 8 && blackPos[i + 2].x < 1))
+			if (blackPos[i + 2].x <= 8 && blackPos[i + 2].x >= 1)
 			{
 				temp.push_back(blackKnights[i].possibleMoves(whitePos, blackPos, i + 2));
 			}
-			if (!(blackBishops[i].isDeleted() && blackPos[i + 4].x > 8 && blackPos[i + 4].x < 1))
+			if (blackPos[i + 4].x <= 8 && blackPos[i + 4].x >= 1)
 			{
 				temp.push_back(blackBishops[i].possibleMoves(whitePos, blackPos, i + 4));
 			}
 		}
 		for (int i = 0; i < howManyBlackPawns; i++)
 		{
-			if (!(blackPawns[i].isDeleted() && blackPos[i + 6].x > 8 && blackPos[i + 6].x < 1))
+			if (blackPos[i + 6].x <= 8 && blackPos[i + 6].x >= 1)
 			{
 				temp.push_back(blackPawns[i].possibleMoves(whitePos, blackPos, i + 6));
 			}
 		}
 		for (int i = 0; i < 9 - howManyBlackPawns; i++)
 		{
-			if (!(blackQueens[i].isDeleted() && blackPos[i + 6 + howManyBlackPawns].x > 8 && blackPos[i + 6 + howManyBlackPawns].x < 1))
+			if (blackPos[i + 6 + howManyBlackPawns].x <= 8 && blackPos[i + 6 + howManyBlackPawns].x >= 1)
 			{
 				temp.push_back(blackQueens[i].possibleMoves(whitePos, blackPos, i + 6 + howManyBlackPawns));
 			}
 		}
-		if (!(blackKing->isDeleted() && blackPos[15].x > 8 && blackPos[15].x < 1))
+		if (blackPos[15].x <= 8 && blackPos[15].x >= 1)
 		{
 			temp.push_back(blackKing->possibleMoves(whitePos, blackPos, 15));
 		}
@@ -1150,43 +1150,43 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	switch (pieceType)
 	{
 	case TypeOfPiece::WhiteRook:
-		if (!(whiteRooks[index].isDeleted() && whitePos[index].x < 1 && whitePos[index].x > 8))
+		if (whitePos[index].x >= 1 && whitePos[index].x <= 8)
 		{
 			allMoves = whiteRooks[index].possibleMoves(whitePos, blackPos, index);
 		}
 		break;
 	case TypeOfPiece::BlackRook:
-		if (!blackRooks[index].isDeleted() && blackPos[index].x < 1 && blackPos[index].x > 8))
+		if (blackPos[index].x >= 1 && blackPos[index].x <= 8)
 		{
 			allMoves = blackRooks[index].possibleMoves(whitePos, blackPos, index);
 		}
 		break;
 	case TypeOfPiece::WhiteBishop:
-		if (!(whiteBishops[index].isDeleted() && whitePos[index + 4].x < 1 && whitePos[index + 4].x > 8))
+		if (whitePos[index + 4].x >= 1 && whitePos[index + 4].x <= 8)
 		{
 			allMoves = whiteBishops[index].possibleMoves(whitePos, blackPos, index + 4);
 		}
 		break;
 	case TypeOfPiece::BlackBishop:
-		if (!(blackBishops[index].isDeleted() && blackPos[index + 4].x < 1 && blackPos[index + 4].x > 8))
+		if (blackPos[index + 4].x >= 1 && blackPos[index + 4].x <= 8)
 		{
 			allMoves = blackBishops[index].possibleMoves(whitePos, blackPos, index + 4);
 		}
 		break;
 	case TypeOfPiece::WhiteKnight:
-		if (!(whiteKnights[index].isDeleted() && whitePos[index + 2].x < 1 && whitePos[index + 2].x > 8))
+		if (whitePos[index + 2].x >= 1 && whitePos[index + 2].x <= 8)
 		{
 			allMoves = whiteKnights[index].possibleMoves(whitePos, blackPos, index + 2);
 		}
 		break;
 	case TypeOfPiece::BlackKnight:
-		if (!(blackKnights[index].isDeleted() && blackPos[index + 2].x < 1 && blackPos[index + 2].x > 8))
+		if (blackPos[index + 2].x >= 1 && blackPos[index + 2].x <= 8)
 		{
 			allMoves = blackKnights[index].possibleMoves(whitePos, blackPos, index + 2);
 		}
 		break;
 	case TypeOfPiece::WhitePawn:
-		if (!(whitePawns[index].isDeleted() && whitePos[index + 6].x < 1 && whitePos[index + 6].x > 8))
+		if (whitePos[index + 6].x >= 1 && whitePos[index + 6].x <= 8)
 		{
 			allMoves = whitePawns[index].possibleMoves(whitePos, blackPos, index + 6);
 			if (enPisantIndex != -1 && (whitePos[index + 6].x == blackPos[enPisantIndex].x + 1 || whitePos[index + 6].x == blackPos[enPisantIndex].x - 1) && whitePos[index + 6].y == blackPos[enPisantIndex].y)
@@ -1196,7 +1196,7 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 		}
 		break;
 	case TypeOfPiece::BlackPawn:
-		if (!(blackPawns[index].isDeleted() && blackPos[index + 6].x < 1 && blackPos[index + 6].x > 8))
+		if (blackPos[index + 6].x >= 1 && blackPos[index + 6].x <= 8)
 		{
 			allMoves = blackPawns[index].possibleMoves(whitePos, blackPos, index + 6);
 			if (enPisantIndex != -1 && (blackPos[index + 6].x == whitePos[enPisantIndex].x + 1 || blackPos[index + 6].x == whitePos[enPisantIndex].x - 1) && blackPos[index + 6].y == whitePos[enPisantIndex].y)
@@ -1206,15 +1206,15 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 		}
 		break;
 	case TypeOfPiece::WhiteQueen:
-		if (!whiteQueens[index].isDeleted()) // how to check
+		if (whitePos[index + 6 + howManyWhitePawns].x >= 1 && whitePos[index + 6 + howManyWhitePawns].x <= 8)
 		{
-			allMoves = whiteQueens[index].possibleMoves(whitePos, blackPos, 6 + howManyWhitePawns + index);
+			allMoves = whiteQueens[0].possibleMoves(whitePos, blackPos, 6 + howManyWhitePawns + index);
 		}
 		break;
 	case TypeOfPiece::BlackQueen:
-		if (!blackQueens[index].isDeleted())
+		if (blackPos[index + 6 + howManyBlackPawns].x >= 1 && blackPos[index + 6 + howManyBlackPawns].x <= 8)
 		{
-			allMoves = blackQueens[index].possibleMoves(whitePos, blackPos, 6 + howManyBlackPawns + index);
+			allMoves = blackQueens[0].possibleMoves(whitePos, blackPos, 6 + howManyBlackPawns + index);
 		}
 		break;
 	case TypeOfPiece::WhiteKing:
@@ -1310,7 +1310,7 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 	case TypeOfPiece::none:
 		break;
 	}
-	if (check || isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns) && !isWhiteTurn || isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns) && isWhiteTurn)
+	if (check || isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns) && !isWhiteTurn || isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns) && (!isAI || isWhiteTurn))
 	{
 		int whereIsPiece;
 		sf::Vector2f currentPosOfPiece;
@@ -1321,13 +1321,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::WhiteRook:
 				currentPosOfPiece = whitePos[index];
 				whitePos[index] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(BLACK);
+				whereIsPiece = whatPieceIsChecking(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				whitePos[index] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = whitePos[index];
 					whitePos[index] = allMoves[i];
-					if (isBeingChecked(WHITE))
+					if (isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						whitePos[index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1339,13 +1339,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::BlackRook:
 				currentPosOfPiece = blackPos[index];
 				blackPos[index] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(WHITE);
+				whereIsPiece = whatPieceIsChecking(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				blackPos[index] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = blackPos[index];
 					blackPos[index] = allMoves[i];
-					if (isBeingChecked(BLACK))
+					if (isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						blackPos[index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1357,13 +1357,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::WhiteBishop:
 				currentPosOfPiece = whitePos[index + 4];
 				whitePos[index + 4] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(BLACK);
+				whereIsPiece = whatPieceIsChecking(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				whitePos[index + 4] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = whitePos[index + 4];
 					whitePos[index + 4] = allMoves[i];
-					if (isBeingChecked(WHITE))
+					if (isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						whitePos[index + 4] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1375,13 +1375,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::BlackBishop:
 				currentPosOfPiece = blackPos[index + 4];
 				blackPos[index + 4] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(WHITE);
+				whereIsPiece = whatPieceIsChecking(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				blackPos[index + 4] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = blackPos[index + 4];
 					blackPos[index + 4] = allMoves[i];
-					if (isBeingChecked(BLACK))
+					if (isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						blackPos[index + 4] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1393,13 +1393,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::WhiteKnight:
 				currentPosOfPiece = whitePos[index + 2];
 				whitePos[index + 2] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(BLACK);
+				whereIsPiece = whatPieceIsChecking(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				whitePos[index + 2] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = whitePos[index + 2];
 					whitePos[index + 2] = allMoves[i];
-					if (isBeingChecked(WHITE))
+					if (isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						whitePos[index + 2] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1411,13 +1411,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::BlackKnight:
 				currentPosOfPiece = blackPos[index + 2];
 				blackPos[index + 2] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(WHITE);
+				whereIsPiece = whatPieceIsChecking(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				blackPos[index + 2] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = blackPos[index + 2];
 					blackPos[index + 2] = allMoves[i];
-					if (isBeingChecked(BLACK))
+					if (isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						blackPos[index + 2] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1429,13 +1429,13 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::WhitePawn:
 				currentPosOfPiece = whitePos[index + 6];
 				whitePos[index + 6] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(BLACK);
+				whereIsPiece = whatPieceIsChecking(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				whitePos[index + 6] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
 					currentPos = whitePos[index + 6];
 					whitePos[index + 6] = allMoves[i];
-					if (isBeingChecked(WHITE))
+					if (isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
 						whitePos[index + 6] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
@@ -1447,12 +1447,12 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 			case TypeOfPiece::BlackPawn:
 				currentPosOfPiece = blackPos[index + 6];
 				blackPos[index + 6] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(WHITE);
+				whereIsPiece = whatPieceIsChecking(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
 				blackPos[index + 6] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 					currentPos = blackPos[index + 6];
 				blackPos[index + 6] = allMoves[i];
-				if (isBeingChecked(BLACK))
+				if (isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 				{
 					blackPos[index + 6] = currentPos;
 					allMoves.erase(allMoves.begin() + i);
@@ -1461,39 +1461,39 @@ std::vector<sf::Vector2f> Game::genPieceMoves(const int& index, const TypeOfPiec
 				blackPos[index + 6] = currentPos;
 				break;
 			case TypeOfPiece::WhiteQueen:
-				currentPosOfPiece = whitePos[15 - whiteQueens.size() + index];
-				whitePos[15 - whiteQueens.size() + index] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(BLACK);
-				whitePos[15 - whiteQueens.size() + index] = currentPosOfPiece;
+				currentPosOfPiece = whitePos[6 + howManyWhitePawns + index];
+				whitePos[6 + howManyWhitePawns + index] = sf::Vector2f(1000, 1000);
+				whereIsPiece = whatPieceIsChecking(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+				whitePos[6 + howManyWhitePawns + index] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && blackPos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = whitePos[15 - whiteQueens.size() + index];
-					whitePos[15 - whiteQueens.size() + index] = allMoves[i];
-					if (isBeingChecked(WHITE))
+					currentPos = whitePos[6 + howManyWhitePawns + index];
+					whitePos[6 + howManyWhitePawns + index] = allMoves[i];
+					if (isBeingChecked(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
-						whitePos[15 - whiteQueens.size() + index] = currentPos;
+						whitePos[6 + howManyWhitePawns + index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					whitePos[15 - whiteQueens.size() + index] = currentPos;
+					whitePos[6 + howManyWhitePawns + index] = currentPos;
 				}
 				break;
 			case TypeOfPiece::BlackQueen:
-				currentPosOfPiece = blackPos[15 - blackQueens.size() + index];
-				blackPos[15 - blackQueens.size() + index] = sf::Vector2f(1000, 1000);
-				whereIsPiece = whatPieceIsChecking(WHITE);
-				blackPos[15 - blackQueens.size() + index] = currentPosOfPiece;
+				currentPosOfPiece = blackPos[6 + howManyBlackPawns + index];
+				blackPos[6 + howManyBlackPawns + index] = sf::Vector2f(1000, 1000);
+				whereIsPiece = whatPieceIsChecking(WHITE, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+				blackPos[6 + howManyBlackPawns + index] = currentPosOfPiece;
 				if (!(whereIsPiece != -1 && whitePos[whereIsPiece] == allMoves[i]))
 				{
-					currentPos = blackPos[15 - blackQueens.size() + index];
-					blackPos[15 - blackQueens.size() + index] = allMoves[i];
-					if (isBeingChecked(BLACK))
+					currentPos = blackPos[6 + howManyBlackPawns + index];
+					blackPos[6 + howManyBlackPawns + index] = allMoves[i];
+					if (isBeingChecked(BLACK, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns))
 					{
-						blackPos[15 - blackQueens.size() + index] = currentPos;
+						blackPos[6 + howManyBlackPawns + index] = currentPos;
 						allMoves.erase(allMoves.begin() + i);
 						i--;
 					}
-					blackPos[15 - blackQueens.size() + index] = currentPos;
+					blackPos[6 + howManyBlackPawns + index] = currentPos;
 				}
 				break;
 			default:
@@ -1995,43 +1995,43 @@ bool Game::isValidMove(const TypeOfPiece& Piece, const int& moveToX, const int& 
 	case TypeOfPiece::WhiteRook:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteRook);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhiteRook, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackRook:
 		if (!isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackRook);
+			allMoves = genPieceMoves(index, TypeOfPiece::BlackRook, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::WhiteBishop:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteBishop);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhiteBishop, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackBishop:
 		if (!isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackBishop);
+			allMoves = genPieceMoves(index, TypeOfPiece::BlackBishop, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::WhiteKnight:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKnight);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKnight, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackKnight:
 		if (!isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackKnight);
+			allMoves = genPieceMoves(index, TypeOfPiece::BlackKnight, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::WhitePawn:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhitePawn);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhitePawn, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackPawn:
@@ -2043,25 +2043,25 @@ bool Game::isValidMove(const TypeOfPiece& Piece, const int& moveToX, const int& 
 	case TypeOfPiece::WhiteQueen:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteQueen);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhiteQueen, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackQueen:
 		if (!isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackQueen);
+			allMoves = genPieceMoves(index, TypeOfPiece::BlackQueen, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::WhiteKing:
 		if (isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKing);
+			allMoves = genPieceMoves(index, TypeOfPiece::WhiteKing, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 		}
 		break;
 	case TypeOfPiece::BlackKing:
 		if (!isWhiteTurn)
 		{
-			allMoves = genPieceMoves(index, TypeOfPiece::BlackKing);
+			allMoves = genPieceMoves(index, TypeOfPiece::BlackKing, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size());
 
 		}
 		break;
@@ -2091,7 +2091,7 @@ void Game::gameEnd()
 	{
 		if (isWhiteTurn)
 		{
-			if (isBeingChecked(WHITE))
+			if (isBeingChecked(WHITE, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()))
 			{
 				std::cout << "Black Wins!!!\n";
 			}
@@ -2102,7 +2102,7 @@ void Game::gameEnd()
 		}
 		else
 		{
-			if (isBeingChecked(BLACK))
+			if (isBeingChecked(BLACK, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size()))
 			{
 				std::cout << "White Wins!!!\n";
 			}
