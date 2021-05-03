@@ -24,6 +24,42 @@ public:
 	};
 public:
 	/*
+	* Determines if the white king has moved
+	* 
+	* @return True if it has moved and false otherwise
+	*/
+	bool hasWhiteKingMoved() { return whiteKing->hasBeenMoved(); }
+	/*
+	* Determines if the black king has moved
+	*
+	* @return True if it has moved and false otherwise
+	*/
+	bool hasBlackKingMoved() { return blackKing->hasBeenMoved(); }
+	/*
+	* Determines if the white rook[0] has been moved
+	*
+	* @return True if it has and false otherwise
+	*/
+	bool hasWhiteRooks0Moved() { return whiteRooks[0].hasBeenMoved(); }
+	/*
+	* Determines if the white rook[1] has been moved
+	*
+	* @return True if it has and false otherwise
+	*/
+	bool hasWhiteRooks1Moved() { return whiteRooks[1].hasBeenMoved(); }
+	/*
+	* Determines if the black rook[0] has been moved
+	*
+	* @return True if it has and false otherwise
+	*/
+	bool hasBlackRooks0Moved() { return blackRooks[0].hasBeenMoved(); }
+	/*
+	* Determines if the black rook[1] has been moved
+	*
+	* @return True if it has and false otherwise
+	*/
+	bool hasBlackRooks1Moved() { return blackRooks[1].hasBeenMoved(); }
+	/*
 	* Gets how many white pawns
 	* 
 	* @return How many white pawns have not been promoted
@@ -43,10 +79,14 @@ public:
 	* @param howManyBlackPawns: How many black pawns that have not been promoted
 	* @param whitePos: a vector of white positions
 	* @param blackPos: a vector of black positions
+	* @param whiteRooksHaveMoved: An array of weather or not the white rooks have moved
+	* @param blackRooksHaveMoved: An array of weather or not the black rooks have moved
+	* @param whiteKingHasMoved: Weather or not the white king has moved
+	* @param blackKingHasMoved: Weather or not the black king has moved
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved);
 
 	/*
 	* Gets if it is white's turn
@@ -148,10 +188,14 @@ private:
 	* @param blackPos: A vector of black positions
 	* @param howManyWhitePawns: How many white pawns have not been promoted
 	* @param howManyBlackPawns: How many black pawns have not been promoted
+	* @param whiteRooksHaveMoved: An array of weather or not the white rooks have moved
+	* @param blackRooksHaveMoved: An array of weather or not the wblack rooks have moved
+	* @param whiteKingHasMoved: Weather or not the white king has moved
+	* @param blackKingHasMoved: Weather or not the black king has moved
 	* 
 	* @return A vector of all the possible moves
 	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns);
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved);
 	/*
 	* Castles for a specific castle
 	*
@@ -173,10 +217,18 @@ private:
 	* Determines if a given castle is valid
 	*
 	* @param whatCastle: The type of castle you are checking
+	* @param whitePos: A vector of white positions
+	* @param blackPos: A vector of black positions
+	* @param howManyWhitePawns: The number of unpromoted white pawns
+	* @param howManyBlackPawns: The number of unpromoted black pawns
+	* @param whiteRooksHaveMoved: An array of weather or not the white rooks have moved
+	* @param blackRooksHaveMoved: An array of weather or not the black rooks have moved
+	* @param whiteKingHasMoved: Weather or not the white king has moved
+	* @param blackKingHasMoved: Weather or not the black king has moved
 	*
 	* @return True if it is a valid castle. Fasle otherwise
 	*/
-	bool isValidCastle(const CastlingOptions& whatCastle);
+	bool isValidCastle(const CastlingOptions& whatCastle, std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos, int howManyWhitePawns, int howManyBlackPawns, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved);
 	/*
 	* Moves a piece to a new place on the board
 	*

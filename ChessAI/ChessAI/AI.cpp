@@ -3,15 +3,7 @@
 AI::AI()
 {
 	srand((unsigned int)time(0));
-	sizeOfWhitePawns = 8;
-	sizeOfBlackPawns = 8;
-	m_WhitePositions = game.getWhitePositions();
-	m_BlackPositions = game.getBlackPositions();
-	for (int i = 0; i < 2; i++)
-	{
-		hasWhiteRooksMoved[i] = false;
-		hasBlackRooksMoved[i] = false;
-	}
+	resetValues();
 	game.setAI();
 }
 
@@ -31,7 +23,7 @@ void AI::startGame()
 
 AI::BestMoveAndPiece AI::genBestMove()
 {
-	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions);
+	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
 	int randomNum = rand() / ((RAND_MAX + 1u) / allMoves.size());
 	BestMoveAndPiece bestMove(allMoves[randomNum].moves[rand() / ((RAND_MAX + 1u) / allMoves[randomNum].moves.size())], allMoves[randomNum].piece);
 	return bestMove;
@@ -43,6 +35,12 @@ void AI::resetValues()
 	m_BlackPositions = game.getBlackPositions();
 	sizeOfWhitePawns = game.getSizeWhitePawns();
 	sizeOfBlackPawns = game.getSizeBlackPawns();
+	hasWhiteRooksMoved[0] = game.hasWhiteRooks0Moved();
+	hasWhiteRooksMoved[1] = game.hasWhiteRooks1Moved();
+	hasBlackRooksMoved[0] = game.hasBlackRooks0Moved();
+	hasBlackRooksMoved[1] = game.hasBlackRooks1Moved();
+	hasWhiteKingMoved = game.hasWhiteKingMoved();
+	hasBlackKingMoved = game.hasBlackKingMoved();
 }
 
 float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
