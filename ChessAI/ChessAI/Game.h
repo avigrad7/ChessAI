@@ -114,14 +114,14 @@ public:
 	* @param blackRookHasMooved: An array of bools of weather or not the black rooks have moved
 	* @param whiteKingHasMoved: a bool of weather or not the white king has moved
 	* @param blackKingHasMoved: a bool of weather or not the black king has moved
-	* @param index: the index where the piece is in positions array
+	* @param indexInPositions: the index where the piece is in positions array
 	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
 	* @param whitePos: A vector of white positions
 	* @param blackPos: A vector of black positions
 	*
 	* @return None
 	*/
-	void simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool (&whiteRookHasMoved)[2], bool (&blackRookHasMoved)[2], bool& whiteKingHasMoved, bool& blackKingHasMoved, int indexInPositions, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
 	/*
 	* Gets the window
 	*

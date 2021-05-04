@@ -24,8 +24,35 @@ void AI::startGame()
 AI::BestMoveAndPiece AI::genBestMove()
 {
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
-	int randomNum = rand() / ((RAND_MAX + 1u) / allMoves.size());
-	BestMoveAndPiece bestMove(allMoves[randomNum].moves[rand() / ((RAND_MAX + 1u) / allMoves[randomNum].moves.size())], allMoves[randomNum].piece);
+	AI::BestMoveAndPiece bestMove(allMoves[0].moves[0], allMoves[0].piece);
+	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions);
+	float bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
+	std::vector<AI::BestMoveAndPiece> allPossibleBestMoves;
+	resetValues();
+	for (int i = 0; i < (int)allMoves.size(); i++)
+	{
+		for(int u = 0; u < (int)allMoves[i].moves.size(); u++)
+		{
+			game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions);
+			if (bestValue > genPositionValue(m_WhitePositions, m_BlackPositions))
+			{
+				bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
+				bestMove.bestMove = allMoves[i].moves[u];
+				bestMove.whatPiece = allMoves[i].piece;
+				allPossibleBestMoves.clear();
+			}
+			else if (bestValue == genPositionValue(m_WhitePositions, m_BlackPositions))
+			{
+				allPossibleBestMoves.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
+			}
+			resetValues();
+		}
+	}
+	if (allPossibleBestMoves.size() > 0)
+	{
+		int randomNum = rand() % allPossibleBestMoves.size();
+		bestMove = allPossibleBestMoves[randomNum];
+	}
 	return bestMove;
 }
 
@@ -71,7 +98,7 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 				value += 10;
 			}
 		}
-		else if (!(blackPos[i].x < 1 || blackPos[i].x > 8))
+		if (!(blackPos[i].x < 1 || blackPos[i].x > 8))
 		{
 			if (i == 0 || i == 1)
 			{

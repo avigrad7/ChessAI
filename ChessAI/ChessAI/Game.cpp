@@ -413,30 +413,41 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	}
 }
 
-void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool*& whiteRookHasMoved, bool*& blackRookHasMoved, bool& whiteKingHasMoved, bool& blackKingHasMoved, int index, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool (&whiteRookHasMoved)[2], bool (&blackRookHasMoved)[2], bool& whiteKingHasMoved, bool& blackKingHasMoved, int indexInPositions, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
 {
-	TypeOfPiece pieceType = getPieceType(index, color);
+	TypeOfPiece pieceType = getPieceType(indexInPositions, color);
+	for (int i = 0; i < 16; i++)
+	{
+		if (blackPos[i] == moveTo)
+		{
+			blackPos[i] = sf::Vector2f{ -1000, -1000 };
+		}
+		else if (whitePos[i] == moveTo)
+		{
+			whitePos[i] = sf::Vector2f{ -1000, -1000 };
+		}
+	}
 	switch (pieceType)
 	{
 	case TypeOfPiece::WhiteRook:
-		whiteRookHasMoved[index] = true;
-		whitePos[index] = moveTo;
+		whiteRookHasMoved[indexInPositions] = true;
+		whitePos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackRook:
-		blackRookHasMoved[index] =  true;
-		blackPos[index] = moveTo;
+		blackRookHasMoved[indexInPositions] =  true;
+		blackPos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteBishop:
-		whitePos[index] = moveTo;
+		whitePos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackBishop:
-		blackPos[index] = moveTo;
+		blackPos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKnight:
-		whitePos[index] = moveTo;
+		whitePos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackKnight:
-		blackPos[index] = moveTo;
+		blackPos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
 		for (int i = 6; i < 6 + howManyBlackPawns; i++) //En Pisant
@@ -449,7 +460,7 @@ void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howMan
 		}
 		if (moveTo.y == 1) //Promotion
 		{
-			for (int i = index; i < 15; i++)
+			for (int i = indexInPositions; i < 15; i++)
 			{
 				whitePos[i] = whitePos[i + 1];
 			}
@@ -458,7 +469,7 @@ void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howMan
 		}
 		else
 		{
-			whitePos[index] = moveTo;
+			whitePos[indexInPositions] = moveTo;
 		}
 		break;
 	case TypeOfPiece::BlackPawn:
@@ -472,7 +483,7 @@ void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howMan
 		}	
 		if (moveTo.y == 8)
 		{
-			for (int i = index; i < 15; i++)
+			for (int i = indexInPositions; i < 15; i++)
 			{
 				blackPos[i] = blackPos[i + 1];
 			}
@@ -481,21 +492,21 @@ void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howMan
 		}
 		else
 		{
-			blackPos[index] = moveTo;
+			blackPos[indexInPositions] = moveTo;
 		}
 		break;
 	case TypeOfPiece::WhiteQueen:
-		whitePos[index] = moveTo;
+		whitePos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackQueen:
-		blackPos[index] = moveTo;
+		blackPos[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKing:
-		if (whitePos[index].x == 5 && moveTo.x == 3 && !whiteKingHasMoved && !whiteRookHasMoved[0])
+		if (whitePos[indexInPositions].x == 5 && moveTo.x == 3 && !whiteKingHasMoved && !whiteRookHasMoved[0])
 		{
 			whitePos[0] = sf::Vector2f(4, 8);
 		}
-		else if(whitePos[index].x == 5 && moveTo.x == 7 && !whiteKingHasMoved && !whiteRookHasMoved[1])
+		else if(whitePos[indexInPositions].x == 5 && moveTo.x == 7 && !whiteKingHasMoved && !whiteRookHasMoved[1])
 		{ 
 			whitePos[1] = sf::Vector2f(6, 8);
 		}
@@ -503,11 +514,11 @@ void Game::simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howMan
 		whiteKingHasMoved = true;
 		break;
 	case TypeOfPiece::BlackKing:
-		if (blackPos[index].x == 5 && moveTo.x == 3 && !blackKingHasMoved && !blackRookHasMoved[0])
+		if (blackPos[indexInPositions].x == 5 && moveTo.x == 3 && !blackKingHasMoved && !blackRookHasMoved[0])
 		{
 			blackPos[0] = sf::Vector2f(4, 8);
 		}
-		else if (blackPos[index].x == 5 && moveTo.x == 7 && !blackKingHasMoved && !blackRookHasMoved[1])
+		else if (blackPos[indexInPositions].x == 5 && moveTo.x == 7 && !blackKingHasMoved && !blackRookHasMoved[1])
 		{
 			blackPos[1] = sf::Vector2f(6, 8);
 		}
