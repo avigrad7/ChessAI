@@ -25,34 +25,31 @@ AI::BestMoveAndPiece AI::genBestMove()
 {
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
 	AI::BestMoveAndPiece bestMove(allMoves[0].moves[0], allMoves[0].piece);
-	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions);
-	float bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
-	std::vector<AI::BestMoveAndPiece> allPossibleBestMoves;
+	float bestValue = genLayerDeep(bestMove);
+	float value = 0.0f;
+	std::vector<AI::BestMoveAndPiece> allPosibleMoves;
+	allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece));
 	resetValues();
 	for (int i = 0; i < (int)allMoves.size(); i++)
 	{
-		for(int u = 0; u < (int)allMoves[i].moves.size(); u++)
+		for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
 		{
-			game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions);
-			if (bestValue > genPositionValue(m_WhitePositions, m_BlackPositions))
+			value = genLayerDeep(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
+			if (value < bestValue)
 			{
-				bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
-				bestMove.bestMove = allMoves[i].moves[u];
+				bestValue = value;
 				bestMove.whatPiece = allMoves[i].piece;
-				allPossibleBestMoves.clear();
+				bestMove.bestMove = allMoves[i].moves[u];
+				allPosibleMoves.clear();
+				allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
 			}
-			else if (bestValue == genPositionValue(m_WhitePositions, m_BlackPositions))
+			else if (value == bestValue)
 			{
-				allPossibleBestMoves.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
+				allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
 			}
-			resetValues();
 		}
 	}
-	if (allPossibleBestMoves.size() > 0)
-	{
-		int randomNum = rand() % allPossibleBestMoves.size();
-		bestMove = allPossibleBestMoves[randomNum];
-	}
+	bestMove = allPosibleMoves[rand() % allPosibleMoves.size()];
 	return bestMove;
 }
 
@@ -123,4 +120,30 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 		}
 	}
 	return value;
+}
+
+float AI::genLayerDeep(AI::BestMoveAndPiece startingPoint)
+{
+	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
+	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
+	game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions);
+	float bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
+	resetValues();
+	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
+	float value = 0.0f;
+	for (int i = 0; i < (int)allMoves.size(); i++)
+	{
+		for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
+		{
+			game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions);
+			value = genPositionValue(m_WhitePositions, m_BlackPositions);
+			resetValues();
+			game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
+			if (value > bestValue)
+			{
+				bestValue = value;
+			}
+		}
+	}
+	return bestValue;
 }
