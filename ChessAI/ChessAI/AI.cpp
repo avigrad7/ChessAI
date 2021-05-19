@@ -24,8 +24,7 @@ void AI::startGame()
 AI::BestMoveAndPiece AI::genBestMove()
 {
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
-	AI::BestMoveAndPiece bestMove(allMoves[0].moves[0], allMoves[0].piece);
-	float bestValue = genLayerDeep(bestMove);
+	float bestValue = genLayerDeep(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece));
 	float value = 0.0f;
 	std::vector<AI::BestMoveAndPiece> allPosibleMoves;
 	allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece));
@@ -38,8 +37,6 @@ AI::BestMoveAndPiece AI::genBestMove()
 			if (value < bestValue)
 			{
 				bestValue = value;
-				bestMove.whatPiece = allMoves[i].piece;
-				bestMove.bestMove = allMoves[i].moves[u];
 				allPosibleMoves.clear();
 				allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
 			}
@@ -49,8 +46,7 @@ AI::BestMoveAndPiece AI::genBestMove()
 			}
 		}
 	}
-	bestMove = allPosibleMoves[rand() % allPosibleMoves.size()];
-	return bestMove;
+	return allPosibleMoves[rand() % allPosibleMoves.size()];
 }
 
 void AI::resetValues()
@@ -70,7 +66,7 @@ void AI::resetValues()
 float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos)
 {
 	float value = 0;
-	for (int i = 0; i < 15; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (!(whitePos[i].x < 1 || whitePos[i].x > 8))
 		{
@@ -90,9 +86,21 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			{
 				value++;
 			}
-			else
+			else if (i != 15)
 			{
 				value += 10;
+			}
+			else
+			{
+				value += 1000;
+				if(game.isCheckMate(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
+				{
+					value += 1000;
+				}	
+				else if (game.isStaleMate(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
+				{
+					value = 0;
+				}
 			}
 		}
 		if (!(blackPos[i].x < 1 || blackPos[i].x > 8))
@@ -113,9 +121,21 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			{
 				value--;
 			}
-			else
+			else if(i != 15)
 			{
 				value -= 10;
+			}
+			else
+			{
+				value -= 1000;
+				if (game.isCheckMate(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
+				{
+					value -= 1000;
+				}
+				else if (game.isStaleMate(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
+				{
+					value = 0;
+				}
 			}
 		}
 	}
@@ -126,22 +146,26 @@ float AI::genLayerDeep(AI::BestMoveAndPiece startingPoint)
 {
 	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved);
-	game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions);
 	float bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
-	resetValues();
-	game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
 	float value = 0.0f;
-	for (int i = 0; i < (int)allMoves.size(); i++)
+	if ((int)allMoves.size() != 0)
 	{
-		for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
+		game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions);
+		bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
+		resetValues();
+		game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
+		for (int i = 0; i < (int)allMoves.size(); i++)
 		{
-			game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions);
-			value = genPositionValue(m_WhitePositions, m_BlackPositions);
-			resetValues();
-			game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
-			if (value > bestValue)
+			for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
 			{
-				bestValue = value;
+				game.simulateMovingAPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions);
+				value = genPositionValue(m_WhitePositions, m_BlackPositions);
+				if (value > bestValue)
+				{
+					bestValue = value;
+				}
+				resetValues();
+				game.simulateMovingAPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, startingPoint.whatPiece, startingPoint.bestMove, m_WhitePositions, m_BlackPositions);
 			}
 		}
 	}

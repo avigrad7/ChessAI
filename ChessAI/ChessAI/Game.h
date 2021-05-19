@@ -24,6 +24,30 @@ public:
 	};
 public:
 	/*
+	* Checks if the positions is check mate
+	* 
+	* @param color: The color of the pieces that you want to see if it is check mate of
+	* @param howManyWhitePawns: How many white pawns that have not been promoted
+	* @param howManyBlackPawns: How many black pawns that have not been promoted
+	* @param whitePos: a vector of white positions
+	* @param blackPos: a vector of black positions
+	* 
+	* @return True if it is check mate and false otherwise
+	*/
+	bool isCheckMate(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	/*
+	* Checks if the positions is stale mate
+	*
+	* @param color: The color of the pieces that you want to see if it is check mate of
+	* @param howManyWhitePawns: How many white pawns that have not been promoted
+	* @param howManyBlackPawns: How many black pawns that have not been promoted
+	* @param whitePos: a vector of white positions
+	* @param blackPos: a vector of black positions
+	*
+	* @return True if it is stale mate and false otherwise
+	*/
+	bool isStaleMate(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	/*
 	* Determines if the white king has moved
 	* 
 	* @return True if it has moved and false otherwise

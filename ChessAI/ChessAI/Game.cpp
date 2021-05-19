@@ -295,6 +295,7 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	TypeOfPiece pieceType = getPieceType(index, color);
 	bool whiteRooksHaveMoved[2] = { whiteRooks[0].hasBeenMoved(), whiteRooks[1].hasBeenMoved() };
 	bool blackRooksHaveMoved[2] = { blackRooks[0].hasBeenMoved(), blackRooks[1].hasBeenMoved() };
+	bool couldBeEnPisant = false;
 	switch (pieceType)
 	{
 	case TypeOfPiece::WhiteRook:
@@ -326,6 +327,11 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	case TypeOfPiece::WhitePawn:
 		EnPisant(WHITE, moveTo);
 		movePiece(whitePawns[index - 6].getPiece(), moveTo);
+		if (m_WhitePositions[index].y == 7 && moveTo.y == 5)
+		{
+			enPisantIndex = index;
+			couldBeEnPisant = true;
+		}
 		m_WhitePositions[index] = moveTo;
 		if (moveTo.y == 1)
 		{
@@ -344,6 +350,11 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	case TypeOfPiece::BlackPawn:
 		EnPisant(BLACK, moveTo);
 		movePiece(blackPawns[index - 6].getPiece(), moveTo);
+		if (m_BlackPositions[index].y == 2 && moveTo.y == 4)
+		{
+			enPisantIndex = index;
+			couldBeEnPisant = true;
+		}
 		m_BlackPositions[index] = moveTo;
 		if (moveTo.y == 8)
 		{
@@ -409,7 +420,10 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	{
 		isWhiteTurn = true;
 		removePiece(WHITE, m_BlackPositions[index]);
-
+	}
+	if (!couldBeEnPisant)
+	{
+		enPisantIndex = -1;
 	}
 }
 
@@ -2150,20 +2164,28 @@ bool Game::isGameEnd()
 	{
 		allMoves = genAllMoves(BLACK);
 	}
-	if (allMoves.size() == 0)
-	{
-		m_Window->clear();
-		drawBoard();
-		drawPieces();
-		m_Window->display();
-		m_Window->close();
-		return true;
-	}
-	else
+	return (int)allMoves.size() == 0;
+}
+
+bool Game::isCheckMate(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+{
+	std::vector<sf::Vector2f> allMoves = genAllBaseLevelMoves(color, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+	if ((int)allMoves.size() != 0)
 	{
 		return false;
 	}
+	else
+	{
+		return isBeingChecked(color, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+	}
 }
+
+bool Game::isStaleMate(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos)
+{
+	std::vector<sf::Vector2f> allMoves = genAllBaseLevelMoves(color, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+	return (int)allMoves.size() == 0 && !isBeingChecked(color, whitePos, blackPos, howManyWhitePawns, howManyBlackPawns);
+}
+
 
 void Game::eventHandler(sf::Event& event)
 {
