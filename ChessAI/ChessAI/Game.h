@@ -127,7 +127,7 @@ public:
 	*
 	* @return None
 	*/
-	void movePieceAndSetPosition(Color color, int index, const sf::Vector2f& moveTo);
+	void movePieceAndSetPosition(Color color, int indexInPositions, const sf::Vector2f& moveTo);
 	/*
 	* Simulates moving a piece to a new place on the board and sets it's position
 	*

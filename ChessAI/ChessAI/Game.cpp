@@ -290,58 +290,58 @@ void Game::movePiece(sf::RectangleShape& piece, const sf::Vector2f& moveTo)
 	piece.setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
 }
 
-void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& moveTo)
+void Game::movePieceAndSetPosition(Color color, int indexInPositions, const sf::Vector2f& moveTo)
 {
-	TypeOfPiece pieceType = getPieceType(index, color);
+	TypeOfPiece pieceType = getPieceType(indexInPositions, color);
 	bool whiteRooksHaveMoved[2] = { whiteRooks[0].hasBeenMoved(), whiteRooks[1].hasBeenMoved() };
 	bool blackRooksHaveMoved[2] = { blackRooks[0].hasBeenMoved(), blackRooks[1].hasBeenMoved() };
 	bool couldBeEnPisant = false;
 	switch (pieceType)
 	{
 	case TypeOfPiece::WhiteRook:
-		whiteRooks[index].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		whiteRooks[index].moved();
-		m_WhitePositions[index] = moveTo;
+		whiteRooks[indexInPositions].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		whiteRooks[indexInPositions].moved();
+		m_WhitePositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackRook:
-		blackRooks[index].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		blackRooks[index].moved();
-		m_BlackPositions[index] = moveTo;
+		blackRooks[indexInPositions].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		blackRooks[indexInPositions].moved();
+		m_BlackPositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteBishop:
-		whiteBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index] = moveTo;
+		whiteBishops[indexInPositions - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackBishop:
-		blackBishops[index - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index] = moveTo;
+		blackBishops[indexInPositions - 4].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKnight:
-		whiteKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index] = moveTo;
+		whiteKnights[indexInPositions - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackKnight:
-		blackKnights[index - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index] = moveTo;
+		blackKnights[indexInPositions - 2].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhitePawn:
 		EnPisant(WHITE, moveTo);
-		movePiece(whitePawns[index - 6].getPiece(), moveTo);
-		if (m_WhitePositions[index].y == 7 && moveTo.y == 5)
+		movePiece(whitePawns[indexInPositions - 6].getPiece(), moveTo);
+		if (m_WhitePositions[indexInPositions].y == 7 && moveTo.y == 5)
 		{
-			enPisantIndex = index;
+			enPisantIndex = indexInPositions;
 			couldBeEnPisant = true;
 		}
-		m_WhitePositions[index] = moveTo;
+		m_WhitePositions[indexInPositions] = moveTo;
 		if (moveTo.y == 1)
 		{
-			removePiece(BLACK, m_WhitePositions[index]);
-			whitePawns[index - 6].deletePiece(m_WhitePositions, index);
-			for (int i = index; i < 16 - (int)whiteQueens.size(); i++)
+			removePiece(BLACK, m_WhitePositions[indexInPositions]);
+			whitePawns[indexInPositions - 6].deletePiece(m_WhitePositions, indexInPositions);
+			for (int i = indexInPositions; i < 16 - (int)whiteQueens.size(); i++)
 			{
 				m_WhitePositions[i] = m_WhitePositions[i + 1];
 			}
-			whitePawns.erase(whitePawns.begin() + index - 6);
+			whitePawns.erase(whitePawns.begin() + (indexInPositions - 6));
 			m_WhitePositions[14] = moveTo;
 			whiteQueens.emplace_back(Queen(WHITE, *m_Window));
 			movePiece(whiteQueens[whiteQueens.size() - 1].getPiece(), moveTo);
@@ -349,34 +349,34 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 		break;
 	case TypeOfPiece::BlackPawn:
 		EnPisant(BLACK, moveTo);
-		movePiece(blackPawns[index - 6].getPiece(), moveTo);
-		if (m_BlackPositions[index].y == 2 && moveTo.y == 4)
+		movePiece(blackPawns[indexInPositions - 6].getPiece(), moveTo);
+		if (m_BlackPositions[indexInPositions].y == 2 && moveTo.y == 4)
 		{
-			enPisantIndex = index;
+			enPisantIndex = indexInPositions;
 			couldBeEnPisant = true;
 		}
-		m_BlackPositions[index] = moveTo;
+		m_BlackPositions[indexInPositions] = moveTo;
 		if (moveTo.y == 8)
 		{
-			removePiece(WHITE, m_BlackPositions[index]);
-			blackPawns[index - 6].deletePiece(m_BlackPositions, index);
-			for (int i = index; i < 16 - (int)blackQueens.size(); i++)
+			removePiece(WHITE, m_BlackPositions[indexInPositions]);
+			blackPawns[indexInPositions - 6].deletePiece(m_BlackPositions, indexInPositions);
+			for (int i = indexInPositions; i < 16 - (int)blackQueens.size(); i++)
 			{
 				m_BlackPositions[i] = m_BlackPositions[i + 1];
 			}
-			blackPawns.erase(blackPawns.begin() + index - 6);
+			blackPawns.erase(blackPawns.begin() + (indexInPositions - 6));
 			m_BlackPositions[14] = moveTo;
 			blackQueens.emplace_back(Queen(BLACK, *m_Window));
 			movePiece(blackQueens[blackQueens.size() - 1].getPiece(), moveTo);
 		}
 		break;
 	case TypeOfPiece::WhiteQueen:
-		whiteQueens[index - (14 + (1 - whiteQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_WhitePositions[index] = moveTo;
+		whiteQueens[indexInPositions - (14 + (1 - whiteQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_WhitePositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::BlackQueen:
-		blackQueens[index - (14 + (1 - blackQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
-		m_BlackPositions[index] = moveTo;
+		blackQueens[indexInPositions - (14 + (1 - blackQueens.size()))].getPiece().setPosition((moveTo.x - 1) * m_SizeOfSquare, (moveTo.y - 1) * m_SizeOfSquare);
+		m_BlackPositions[indexInPositions] = moveTo;
 		break;
 	case TypeOfPiece::WhiteKing:
 		if (isValidCastle(CastlingOptions::smallWhite, m_WhitePositions, m_BlackPositions, (int)whitePawns.size(), (int)blackPawns.size(), whiteRooksHaveMoved, blackRooksHaveMoved, whiteKing->hasBeenMoved(), blackKing->hasBeenMoved()))
@@ -414,12 +414,12 @@ void Game::movePieceAndSetPosition(Color color, int index, const sf::Vector2f& m
 	if (isWhiteTurn)
 	{
 		isWhiteTurn = false;
-		removePiece(BLACK, m_WhitePositions[index]);
+		removePiece(BLACK, m_WhitePositions[indexInPositions]);
 	}
 	else
 	{
 		isWhiteTurn = true;
-		removePiece(WHITE, m_BlackPositions[index]);
+		removePiece(WHITE, m_BlackPositions[indexInPositions]);
 	}
 	if (!couldBeEnPisant)
 	{
@@ -1110,9 +1110,9 @@ std::vector<sf::Vector2f> Game::genAllBaseLevelMoves(const Color& color, std::ve
 		}
 		for (int i = 0; i < 9 - howManyWhitePawns; i++)
 		{
-			if (!whiteQueens[i].isDeleted() && whitePos[i + 6 + howManyWhitePawns].x <= 8 && whitePos[i + 6 + howManyWhitePawns].x >= 1)
+			if (whitePos[i + 6 + howManyWhitePawns].x <= 8 && whitePos[i + 6 + howManyWhitePawns].x >= 1)
 			{
-				temp.push_back(whiteQueens[i].possibleMoves(whitePos, blackPos, i + 6 + howManyWhitePawns));
+				temp.push_back(whiteQueens[0].possibleMoves(whitePos, blackPos, i + 6 + howManyWhitePawns));
 			}
 		}
 		if (!whiteKing->isDeleted() && whitePos[15].x <= 8 && whitePos[15].x >= 1)
@@ -1148,7 +1148,7 @@ std::vector<sf::Vector2f> Game::genAllBaseLevelMoves(const Color& color, std::ve
 		{
 			if (blackPos[i + 6 + howManyBlackPawns].x <= 8 && blackPos[i + 6 + howManyBlackPawns].x >= 1)
 			{
-				temp.push_back(blackQueens[i].possibleMoves(whitePos, blackPos, i + 6 + howManyBlackPawns));
+				temp.push_back(blackQueens[0].possibleMoves(whitePos, blackPos, i + 6 + howManyBlackPawns));
 			}
 		}
 		if (blackPos[15].x <= 8 && blackPos[15].x >= 1)
