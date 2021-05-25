@@ -23,6 +23,7 @@ public:
 		std::vector<sf::Vector2f> moves;
 	};
 public:
+	int getEnPisantIndex() { return enPisantIndex; }
 	/*
 	* Checks if the positions is check mate
 	* 
@@ -107,10 +108,11 @@ public:
 	* @param blackRooksHaveMoved: An array of weather or not the black rooks have moved
 	* @param whiteKingHasMoved: Weather or not the white king has moved
 	* @param blackKingHasMoved: Weather or not the black king has moved
+	* @param tempEnPisantIndex: The index of the EnPisant pawn
 	* 
 	* @retun An array of moves and their piece
 	*/
-	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved);
+	std::vector<PieceAndMoves> genAllMovesAndTheirPiece(Color color, int howManyWhitePawns, int howManyBlackPawns, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved, int tempEnPisantIndex);
 
 	/*
 	* Gets if it is white's turn
@@ -142,10 +144,11 @@ public:
 	* @param moveTo: The place you the piece to move (1 -8 , 1 - 8)
 	* @param whitePos: A vector of white positions
 	* @param blackPos: A vector of black positions
-	*
+	* @param tempEnPisantIndex: The index of EnPisant pawn
+	* 
 	* @return None
 	*/
-	void simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool (&whiteRookHasMoved)[2], bool (&blackRookHasMoved)[2], bool& whiteKingHasMoved, bool& blackKingHasMoved, int indexInPositions, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos);
+	void simulateMovingAPiece(Color color, int& howManyWhitePawns, int& howManyBlackPawns, bool (&whiteRookHasMoved)[2], bool (&blackRookHasMoved)[2], bool& whiteKingHasMoved, bool& blackKingHasMoved, int indexInPositions, const sf::Vector2f& moveTo, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int& tempEnPisantIndex);
 	/*
 	* Gets the window
 	*
@@ -216,10 +219,11 @@ private:
 	* @param blackRooksHaveMoved: An array of weather or not the wblack rooks have moved
 	* @param whiteKingHasMoved: Weather or not the white king has moved
 	* @param blackKingHasMoved: Weather or not the black king has moved
+	* @param tempEnPisantIndex: The index of the EnPisant pawn
 	* 
 	* @return A vector of all the possible moves
 	*/
-	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved);
+	std::vector<sf::Vector2f> genPieceMoves(const int& index, const TypeOfPiece& pieceType, std::vector<sf::Vector2f>& whitePos, std::vector<sf::Vector2f>& blackPos, int howManyWhitePawns, int howManyBlackPawns, bool* whiteRooksHaveMoved, bool* blackRooksHaveMoved, bool whiteKingHasMoved, bool blackKingHasMoved, int tempEnPisantIndex);
 	/*
 	* Castles for a specific castle
 	*
