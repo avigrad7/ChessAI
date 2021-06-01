@@ -23,8 +23,12 @@ void AI::startGame()
 
 AI::BestMoveAndPiece AI::genBestMove()
 {
+	int test = 0;
+
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, enPisantIndex);
-	float bestValue = genLayerDeep(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece), BLACK);
+	std::vector<AI::BestMoveAndPiece> path;
+	path.push_back(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece));
+	float bestValue = genLayerDeep(path, BLACK, 0, test);
 	float value = 0.0f;
 	std::vector<AI::BestMoveAndPiece> allPosibleMoves;
 	allPosibleMoves.push_back(AI::BestMoveAndPiece(allMoves[0].moves[0], allMoves[0].piece));
@@ -33,7 +37,9 @@ AI::BestMoveAndPiece AI::genBestMove()
 	{
 		for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
 		{
-			value = genLayerDeep(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece), BLACK);
+			path.clear();
+			path.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
+			value = genLayerDeep(path, BLACK, 0, test);
 			if (value < bestValue)
 			{
 				bestValue = value;
@@ -46,6 +52,11 @@ AI::BestMoveAndPiece AI::genBestMove()
 			}
 		}
 	}
+	/*for (int q = 0; q < (int)allPosibleMoves.size(); q++)
+	{
+		std::cout << q + 1 << ": move: " << allPosibleMoves[q].bestMove.x << ", " << allPosibleMoves[q].bestMove.y << " | best piece: " << allPosibleMoves[q].whatPiece << std::endl;
+	}
+	std::cout << "--------------------------------------------------------------------------------------------" << std::endl;*/
 	return allPosibleMoves[rand() % allPosibleMoves.size()];
 }
 
@@ -109,10 +120,10 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			else
 			{
 				value += 1000;
-				if(game.isCheckMate(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
+				if (game.isCheckMate(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
 				{
 					value += 1000;
-				}	
+				}
 				else if (game.isStaleMate(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, whitePos, blackPos))
 				{
 					value = 0;
@@ -137,7 +148,7 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 			{
 				value--;
 			}
-			else if(i != 15)
+			else if (i != 15)
 			{
 				value -= 10;
 			}
@@ -158,9 +169,66 @@ float AI::genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::V
 	return value;
 }
 
-float AI::genLayerDeep(std::vector<AI::BestMoveAndPiece> path, Color color)
+float AI::genLayerDeep(std::vector<AI::BestMoveAndPiece>& path, Color color, int count, int& test)
 {
 	moveDownPath(path);
+	std::vector<Game::PieceAndMoves> allMoves;
+	if (color == WHITE)
+	{
+		allMoves = game.genAllMovesAndTheirPiece(BLACK, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, enPisantIndex);
+	}
+	else
+	{
+		allMoves = game.genAllMovesAndTheirPiece(WHITE, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, enPisantIndex);
+	}
+	float value = 0.0f;
+	float bestValue = -999.1f;
+	if (count == 2)
+	{
+		game.simulateMovingAPiece(color, sizeOfWhitePawns, sizeOfBlackPawns, hasBlackRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[0].piece, allMoves[0].moves[0], m_WhitePositions, m_BlackPositions, enPisantIndex);
+		bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
+	}
+	for (int i = 0; i < (int)allMoves.size(); i++)
+	{
+		for (int u = 0; u < (int)allMoves[i].moves.size(); u++)
+		{
+			path.push_back(AI::BestMoveAndPiece(allMoves[i].moves[u], allMoves[i].piece));
+			resetValues();
+			moveDownPath(path);
+			game.simulateMovingAPiece(color, sizeOfWhitePawns, sizeOfBlackPawns, hasBlackRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, allMoves[i].piece, allMoves[i].moves[u], m_WhitePositions, m_BlackPositions, enPisantIndex);
+			if (count < 2)
+			{
+				if (color == WHITE)
+				{
+					value = genLayerDeep(path, BLACK, (count + 1), test);
+					if (bestValue == -999.1f || value > bestValue)
+					{
+						bestValue = value;
+					}
+				}
+				else
+				{
+					value = genLayerDeep(path, WHITE, (count + 1), test);
+					if (bestValue == -999.1f || value < bestValue)
+					{
+						bestValue = value;
+					}
+				}
+				
+				path.pop_back();
+			}
+			else
+			{
+				value = genPositionValue(m_WhitePositions, m_BlackPositions);
+				if (color == WHITE && value > bestValue || color == BLACK && value < bestValue)
+				{
+					bestValue = value;
+				}
+			}
+		}
+	}
+	return bestValue;
+	/*moveDownPath(path);
 	std::vector<Game::PieceAndMoves> allMoves = game.genAllMovesAndTheirPiece(color, sizeOfWhitePawns, sizeOfBlackPawns, m_WhitePositions, m_BlackPositions, hasWhiteRooksMoved, hasBlackRooksMoved, hasWhiteKingMoved, hasBlackKingMoved, enPisantIndex);
 	float bestValue = genPositionValue(m_WhitePositions, m_BlackPositions);
 	float value = 0.0f;
@@ -185,5 +253,5 @@ float AI::genLayerDeep(std::vector<AI::BestMoveAndPiece> path, Color color)
 			}
 		}
 	}
-	return bestValue;
+	return bestValue;*/
 }

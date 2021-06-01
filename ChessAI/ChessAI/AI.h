@@ -23,7 +23,7 @@ private:
 	BestMoveAndPiece genBestMove();
 	void resetValues();
 	float genPositionValue(std::vector<sf::Vector2f> whitePos, std::vector<sf::Vector2f> blackPos);
-	float genLayerDeep(std::vector<AI::BestMoveAndPiece> path, Color color);
+	float genLayerDeep(std::vector<AI::BestMoveAndPiece>& path, Color color, int count, int& test);
 	void moveDownPath(std::vector<AI::BestMoveAndPiece> path);
 private:
 	Game game;
